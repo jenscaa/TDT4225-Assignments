@@ -399,7 +399,7 @@ def main():
         
         # Configuration
         batch_size = 5000
-        resume_from_row = 551000  # <-- UPDATE THIS to resume from where it crashed
+        resume_from_row = 0  # <-- UPDATE THIS to resume from where it crashed
         
         print(f"\n⚠ RESUMING FROM ROW {resume_from_row}")
         print("Change resume_from_row in main() to adjust starting point\n")
