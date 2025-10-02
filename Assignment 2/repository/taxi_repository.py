@@ -25,7 +25,7 @@ class TaxiRepository:
         """Get trip counts for each taxi"""
         query = """
         SELECT taxi_id, COUNT(*) as trip_count
-        FROM Trips
+        FROM trips
         GROUP BY taxi_id
         ORDER BY trip_count DESC
         """
@@ -36,7 +36,7 @@ class TaxiRepository:
         """Get top taxis by number of trips"""
         query = """
         SELECT taxi_id, COUNT(*) as trip_count
-        FROM Trips
+        FROM trips
         GROUP BY taxi_id
         ORDER BY trip_count DESC
         LIMIT %s
@@ -48,13 +48,13 @@ class TaxiRepository:
         """Get most used call type for each taxi"""
         query = """
         SELECT taxi_id, call_type, COUNT(*) as usage_count
-        FROM Trips
+        FROM trips
         GROUP BY taxi_id, call_type
         HAVING COUNT(*) = (
             SELECT MAX(trip_count)
             FROM (
                 SELECT COUNT(*) as trip_count
-                FROM Trips t2
+                FROM trips t2
                 WHERE t2.taxi_id = Trips.taxi_id
                 GROUP BY t2.call_type
             ) as max_counts
@@ -71,7 +71,7 @@ class TaxiRepository:
             taxi_id,
             SUM(TIMESTAMPDIFF(SECOND, ts_start, ts_end)) / 3600.0 as total_hours,
             SUM(ST_Length(ST_GeomFromGeoJSON(polyline))) as total_distance_meters
-        FROM Trips
+        FROM trips
         GROUP BY taxi_id
         ORDER BY total_hours DESC
         """
@@ -86,7 +86,7 @@ class TaxiRepository:
                 taxi_id,
                 ts_end,
                 LEAD(ts_start) OVER (PARTITION BY taxi_id ORDER BY ts_start) as next_trip_start
-            FROM Trips
+            FROM trips
         )
         SELECT 
             taxi_id,

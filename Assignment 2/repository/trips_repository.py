@@ -17,13 +17,13 @@ class TripsRepository:
     
     def get_total_trips(self):
         """Get total number of trips"""
-        query = "SELECT COUNT(*) FROM Trips"
+        query = "SELECT COUNT(*) FROM trips"
         self.cursor.execute(query)
         return self.cursor.fetchone()[0]
     
     def get_total_gps_points(self):
         """Get total number of GPS points across all trips"""
-        query = "SELECT SUM(n_points) FROM Trips"
+        query = "SELECT SUM(n_points) FROM trips"
         self.cursor.execute(query)
         return self.cursor.fetchone()[0]
     
@@ -33,7 +33,7 @@ class TripsRepository:
         SELECT AVG(trip_count) as avg_trips_per_taxi
         FROM (
             SELECT COUNT(*) as trip_count
-            FROM Trips
+            FROM trips
             GROUP BY taxi_id
         ) as taxi_trip_counts
         """
@@ -52,7 +52,7 @@ class TripsRepository:
             SUM(CASE WHEN HOUR(ts_start) BETWEEN 6 AND 11 THEN 1 ELSE 0 END) as trips_06_12,
             SUM(CASE WHEN HOUR(ts_start) BETWEEN 12 AND 17 THEN 1 ELSE 0 END) as trips_12_18,
             SUM(CASE WHEN HOUR(ts_start) BETWEEN 18 AND 23 THEN 1 ELSE 0 END) as trips_18_24
-        FROM Trips
+        FROM trips
         GROUP BY call_type
         """
         self.cursor.execute(query)
@@ -64,7 +64,7 @@ class TripsRepository:
         
         query = """
         SELECT trip_id, taxi_id, ts_start, ts_end
-        FROM Trips
+        FROM trips
         WHERE ST_Distance_Sphere(
             ST_GeomFromGeoJSON(polyline),
             ST_GeomFromText('POINT(%s %s)', 4326)
@@ -77,7 +77,7 @@ class TripsRepository:
         """Get trips with fewer than 3 GPS points"""
         query = """
         SELECT trip_id, taxi_id, n_points, ts_start, ts_end
-        FROM Trips
+        FROM trips
         WHERE n_points < 3
         """
         self.cursor.execute(query)
@@ -87,7 +87,7 @@ class TripsRepository:
         """Get trips that started on one day and ended on the next"""
         query = """
         SELECT trip_id, taxi_id, ts_start, ts_end
-        FROM Trips
+        FROM trips
         WHERE DATE(ts_start) != DATE(ts_end)
         """
         self.cursor.execute(query)
@@ -105,7 +105,7 @@ class TripsRepository:
                 ST_StartPoint(ST_GeomFromGeoJSON(polyline)),
                 ST_EndPoint(ST_GeomFromGeoJSON(polyline))
             ) as start_end_distance
-        FROM Trips
+        FROM trips
         WHERE ST_Distance_Sphere(
             ST_StartPoint(ST_GeomFromGeoJSON(polyline)),
             ST_EndPoint(ST_GeomFromGeoJSON(polyline))
@@ -123,8 +123,8 @@ class TripsRepository:
             t1.taxi_id as taxi1,
             t2.taxi_id as taxi2,
             COUNT(*) as proximity_count
-        FROM Trips t1
-        JOIN Trips t2 ON t1.taxi_id < t2.taxi_id
+        FROM trips t1
+        JOIN trips t2 ON t1.taxi_id < t2.taxi_id
         WHERE ST_Distance_Sphere(
             ST_GeomFromGeoJSON(t1.polyline),
             ST_GeomFromGeoJSON(t2.polyline)
