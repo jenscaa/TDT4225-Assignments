@@ -16,10 +16,10 @@ class DbConnector:
     """
 
     def __init__(self,
-                 HOST="tdt4225-37.idi.ntnu.no",
-                 DATABASE="porto_taxi",
-                 USER="jensc",
-                 PASSWORD="gruppe37"):
+                 HOST="localhost",
+                 DATABASE="porto_taxi_test",
+                 USER="root",
+                 PASSWORD="pass"):
         # Store connection parameters for reconnection
         self.HOST = HOST
         self.DATABASE = DATABASE
