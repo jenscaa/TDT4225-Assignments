@@ -194,7 +194,7 @@ class TaxiAnalysisService:
         print("=" * 60)
         
         try:
-            proximity_pairs = self.trips_repo.get_taxi_proximity_pairs(5, 5)
+            proximity_pairs = self.trips_repo.get_taxi_proximity_pairs_sliding_window(5, 5)
             
             print(f"Found {len(proximity_pairs)} taxi pairs that were within 5m and 5s")
             

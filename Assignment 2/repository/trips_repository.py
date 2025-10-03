@@ -114,26 +114,78 @@ class TripsRepository:
         self.cursor.execute(query, (distance_meters,))
         return self.cursor.fetchall()
     
-    def get_taxi_proximity_pairs(self, distance_meters=5, time_seconds=5):
-        """Get pairs of taxis that were within specified distance and time"""
-        # This is a complex query that would need to be implemented
-        # For now, returning a placeholder
-        query = """
-        SELECT DISTINCT 
-            t1.taxi_id as taxi1,
-            t2.taxi_id as taxi2,
-            COUNT(*) as proximity_count
-        FROM trips t1
-        JOIN trips t2 ON t1.taxi_id < t2.taxi_id
-        WHERE ST_Distance_Sphere(
-            ST_GeomFromGeoJSON(t1.polyline),
-            ST_GeomFromGeoJSON(t2.polyline)
-        ) <= %s
-        AND ABS(TIMESTAMPDIFF(SECOND, t1.ts_start, t2.ts_start)) <= %s
-        GROUP BY t1.taxi_id, t2.taxi_id
-        HAVING COUNT(*) >= 1
+    def get_taxi_proximity_candidates(self, distance_meters=5, time_window_seconds=5, 
+                                  time_start=None, time_end=None):
         """
-        self.cursor.execute(query, (distance_meters, time_seconds))
+        Get CANDIDATE pairs using spatial filtering.
+        Still need Python to check actual point-by-point distances.
+        """
+        query = """
+        SELECT 
+            t1.trip_id, t1.taxi_id, t1.start_epoch, t1.polyline,
+            t2.trip_id, t2.taxi_id, t2.start_epoch, t2.polyline
+        FROM Trips t1
+        JOIN Trips t2 ON t1.taxi_id < t2.taxi_id
+        WHERE 
+            -- Temporal filter (narrow window)
+            t1.ts_start BETWEEN %s AND %s
+            AND t2.ts_start BETWEEN %s AND %s
+            -- Domain overlap filter (spatial pre-filter)
+            AND (t1.domain_radius + t2.domain_radius + %s) >= 
+                ST_Distance_Sphere(
+                    POINT(t1.domain_middle_lon, t1.domain_middle_lat),
+                    POINT(t2.domain_middle_lon, t2.domain_middle_lat)
+                )
+            -- Temporal overlap
+            AND t1.ts_end >= DATE_SUB(t2.ts_start, INTERVAL %s SECOND)
+            AND t2.ts_end >= DATE_SUB(t1.ts_start, INTERVAL %s SECOND)
+        """
+        self.cursor.execute(query, (
+            time_start, time_end, time_start, time_end,
+            distance_meters, time_window_seconds, time_window_seconds
+        ))
+        return self.cursor.fetchall()
+
+    def get_taxi_proximity_pairs_sliding_window(self, distance_meters=5, time_seconds=5):
+        """
+        Find taxi pairs within distance and time using sliding window.
+        This should run in MINUTES, not days!
+        """
+        query = """
+        WITH point_pairs AS (
+            SELECT 
+                p1.taxi_id as taxi1_id,
+                p2.taxi_id as taxi2_id,
+                p1.trip_id as trip1_id,
+                p2.trip_id as trip2_id,
+                ABS(p1.point_timestamp - p2.point_timestamp) as time_diff,
+                ST_Distance_Sphere(
+                    POINT(p1.longitude, p1.latitude),
+                    POINT(p2.longitude, p2.latitude)
+                ) as distance_m
+            FROM gps_points p1
+            JOIN gps_points p2 
+                ON p1.taxi_id < p2.taxi_id  -- Avoid duplicates and self-pairs
+                AND ABS(p1.point_timestamp - p2.point_timestamp) <= %s  -- Time window
+            WHERE ST_Distance_Sphere(
+                POINT(p1.longitude, p1.latitude),
+                POINT(p2.longitude, p2.latitude)
+            ) <= %s  -- Distance threshold
+        )
+        SELECT 
+            taxi1_id,
+            taxi2_id,
+            COUNT(*) as proximity_count,
+            MIN(distance_m) as min_distance,
+            AVG(distance_m) as avg_distance,
+            MIN(time_diff) as min_time_diff,
+            AVG(time_diff) as avg_time_diff
+        FROM point_pairs
+        GROUP BY taxi1_id, taxi2_id
+        ORDER BY proximity_count DESC
+        """
+        
+        self.cursor.execute(query, (time_seconds, distance_meters))
         return self.cursor.fetchall()
     
     def close_connection(self):
