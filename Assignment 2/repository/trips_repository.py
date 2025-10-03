@@ -158,7 +158,11 @@ class TripsRepository:
                 p2.taxi_id as taxi2_id,
                 p1.trip_id as trip1_id,
                 p2.trip_id as trip2_id,
-                ABS(p1.point_timestamp - p2.point_timestamp) as time_diff,
+                CASE 
+                    WHEN p1.point_timestamp >= p2.point_timestamp 
+                    THEN p1.point_timestamp - p2.point_timestamp
+                    ELSE p2.point_timestamp - p1.point_timestamp
+                END as time_diff,
                 ST_Distance_Sphere(
                     POINT(p1.longitude, p1.latitude),
                     POINT(p2.longitude, p2.latitude)
@@ -166,7 +170,13 @@ class TripsRepository:
             FROM gps_points p1
             JOIN gps_points p2 
                 ON p1.taxi_id < p2.taxi_id  -- Avoid duplicates and self-pairs
-                AND ABS(p1.point_timestamp - p2.point_timestamp) <= %s  -- Time window
+                AND (
+                    CASE 
+                        WHEN p1.point_timestamp >= p2.point_timestamp 
+                        THEN p1.point_timestamp - p2.point_timestamp
+                        ELSE p2.point_timestamp - p1.point_timestamp
+                    END
+                ) <= %s  -- Time window
             WHERE ST_Distance_Sphere(
                 POINT(p1.longitude, p1.latitude),
                 POINT(p2.longitude, p2.latitude)
