@@ -1,7 +1,6 @@
 import sys
 import os
-from datetime import datetime
-
+from datetime import datetime, timedelta
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from DbConnector import DbConnector
@@ -10,11 +9,13 @@ class TripsRepository:
     """
     Repository class for trips-related database operations
     """
-    
+
+
+
     def __init__(self):
         self.connection = DbConnector()
         self.cursor = self.connection.cursor
-    
+
     def get_total_trips(self):
         """Get total number of trips"""
         query = "SELECT COUNT(*) FROM trips"
@@ -146,57 +147,136 @@ class TripsRepository:
         ))
         return self.cursor.fetchall()
 
-    def get_taxi_proximity_pairs_sliding_window(self, distance_meters=5, time_seconds=5):
+    def get_taxi_proximity_pairs_sliding_window(self):
         """
-        Find taxi pairs within distance and time using sliding window.
-        This should run in MINUTES, not days!
+        Find taxi pairs within distance and time using a proper sliding window (OVER ... RANGE ...).
+        Fix: cast epoch to DATETIME for RANGE INTERVAL; use numeric +/- for the join.
         """
         query = """
-        WITH point_pairs AS (
-            SELECT 
-                p1.taxi_id as taxi1_id,
-                p2.taxi_id as taxi2_id,
-                p1.trip_id as trip1_id,
-                p2.trip_id as trip2_id,
-                CASE 
-                    WHEN p1.point_timestamp >= p2.point_timestamp 
-                    THEN p1.point_timestamp - p2.point_timestamp
-                    ELSE p2.point_timestamp - p1.point_timestamp
-                END as time_diff,
+        WITH candidates AS (
+            SELECT
+                t1.taxi_id AS taxi1,
+                t2.taxi_id AS taxi2,
+                LEAST(t1.point_timestamp, t2.point_timestamp) AS ts_epoch,
                 ST_Distance_Sphere(
-                    POINT(p1.longitude, p1.latitude),
-                    POINT(p2.longitude, p2.latitude)
-                ) as distance_m
-            FROM gps_points p1
-            JOIN gps_points p2 
-                ON p1.taxi_id < p2.taxi_id  -- Avoid duplicates and self-pairs
-                AND (
-                    CASE 
-                        WHEN p1.point_timestamp >= p2.point_timestamp 
-                        THEN p1.point_timestamp - p2.point_timestamp
-                        ELSE p2.point_timestamp - p1.point_timestamp
-                    END
-                ) <= %s  -- Time window
-            WHERE ST_Distance_Sphere(
-                POINT(p1.longitude, p1.latitude),
-                POINT(p2.longitude, p2.latitude)
-            ) <= %s  -- Distance threshold
+                    POINT(t1.longitude, t1.latitude),
+                    POINT(t2.longitude, t2.latitude)
+                ) AS distance_m
+            FROM gps_points t1
+            JOIN gps_points t2
+              ON t2.taxi_id > t1.taxi_id
+             AND t2.point_timestamp BETWEEN t1.point_timestamp - %s AND t1.point_timestamp + %s
+             AND t2.latitude  BETWEEN t1.latitude  - 0.000045 AND t1.latitude  + 0.000045
+             AND t2.longitude BETWEEN t1.longitude - 0.000060 AND t1.longitude + 0.000060
+        ),
+        kept AS (
+            SELECT
+                taxi1,
+                taxi2,
+                ts_epoch,
+                FROM_UNIXTIME(ts_epoch) AS ts_dt,
+                distance_m,
+                ROW_NUMBER() OVER (
+                    PARTITION BY taxi1, taxi2, ts_epoch
+                    ORDER BY distance_m
+                ) AS rn
+            FROM candidates
+            WHERE distance_m <= %s
+        ),
+        windowed AS (
+            SELECT
+                taxi1,
+                taxi2,
+                ts_dt,
+                distance_m,
+                COUNT(*) OVER (
+                    PARTITION BY taxi1, taxi2
+                    ORDER BY ts_dt
+                    RANGE BETWEEN INTERVAL %s SECOND PRECEDING
+                              AND     INTERVAL %s SECOND FOLLOWING
+                ) AS cnt_in_window
+            FROM kept
+            WHERE rn = 1
         )
-        SELECT 
-            taxi1_id,
-            taxi2_id,
-            COUNT(*) as proximity_count,
-            MIN(distance_m) as min_distance,
-            AVG(distance_m) as avg_distance,
-            MIN(time_diff) as min_time_diff,
-            AVG(time_diff) as avg_time_diff
-        FROM point_pairs
-        GROUP BY taxi1_id, taxi2_id
+        SELECT
+            taxi1,
+            taxi2,
+            COUNT(*)        AS proximity_count,
+            MIN(distance_m) AS min_distance,
+            AVG(distance_m) AS avg_distance,
+            0               AS min_time_diff,
+            0               AS avg_time_diff
+        FROM windowed
+        GROUP BY taxi1, taxi2
         ORDER BY proximity_count DESC
         """
-        
-        self.cursor.execute(query, (time_seconds, distance_meters))
+        # distance_meters = 5, time_window_seconds = 5
+        self.cursor.execute(query, (5, 5, 5, 5, 5))
         return self.cursor.fetchall()
+
+
+    def get_taxi_proximity_pairs_sliding_window_historical(self,
+        overall_start_timestamp_unix=None,
+        overall_end_timestamp_unix=None,
+        window_size_seconds=3600,
+        overlap_seconds=5,
+        batch_size=10000
+    ):
+        """
+        Batched historical run over a date range (defaults to 2014-06-01 full day), 10k rows per fetch.
+        Uses sargable time-range join and streams in batches.
+        """
+        if overall_start_timestamp_unix is None:
+            overall_start_timestamp_unix = int(datetime(2014, 6, 1, 0, 0, 0).timestamp())
+        if overall_end_timestamp_unix is None:
+            overall_end_timestamp_unix = int(datetime(2014, 6, 1, 23, 59, 59).timestamp())
+
+        all_candidate_pairs = []
+
+        current_window_start_dt = datetime.fromtimestamp(overall_start_timestamp_unix)
+        overall_end_dt = datetime.fromtimestamp(overall_end_timestamp_unix)
+
+        while current_window_start_dt <= overall_end_dt:
+            window_end_dt = current_window_start_dt + timedelta(seconds=window_size_seconds)
+            query_window_end_dt = window_end_dt + timedelta(seconds=overlap_seconds)
+            if query_window_end_dt > overall_end_dt:
+                query_window_end_dt = overall_end_dt + timedelta(seconds=5)
+
+            start_unix = int(current_window_start_dt.timestamp())
+            end_unix = int(query_window_end_dt.timestamp())
+
+            query = """
+            SELECT
+                t1.taxi_id AS taxi_id_1,
+                t2.taxi_id AS taxi_id_2,
+                t1.point_timestamp AS timestamp_1,
+                t2.point_timestamp AS timestamp_2,
+                t1.longitude AS longitude_1,
+                t1.latitude  AS latitude_1,
+                t2.longitude AS longitude_2,
+                t2.latitude  AS latitude_2,
+                CAST(t2.point_timestamp AS SIGNED) - CAST(t1.point_timestamp AS SIGNED) AS time_diff_seconds
+            FROM gps_points t1
+            STRAIGHT_JOIN gps_points t2
+              ON t2.taxi_id > t1.taxi_id
+             AND t2.point_timestamp BETWEEN t1.point_timestamp - 5 AND t1.point_timestamp + 5
+            WHERE t1.point_timestamp >= %s
+              AND t1.point_timestamp <  %s
+              AND t2.point_timestamp >= %s
+              AND t2.point_timestamp <= %s
+            ORDER BY t1.point_timestamp, t1.taxi_id
+            """
+            self.cursor.execute(query, (start_unix, end_unix, start_unix - 5, end_unix + 5))
+
+            while True:
+                rows = self.cursor.fetchmany(batch_size)
+                if not rows:
+                    break
+                all_candidate_pairs.extend(rows)
+
+            current_window_start_dt += timedelta(seconds=window_size_seconds)
+
+        return all_candidate_pairs
     
     def close_connection(self):
         """Close database connection"""
