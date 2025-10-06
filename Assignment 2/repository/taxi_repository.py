@@ -70,8 +70,8 @@ class TaxiRepository:
         SELECT 
             taxi_id,
             SUM(TIMESTAMPDIFF(SECOND, ts_start, ts_end)) / 3600.0 as total_hours,
-            SUM(ST_Length(ST_GeomFromGeoJSON(polyline))) as total_distance_meters
-        FROM trips
+            SUM(trip_distance_m) as total_distance_meters
+        FROM Trips
         GROUP BY taxi_id
         ORDER BY total_hours DESC
         """

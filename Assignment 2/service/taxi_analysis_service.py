@@ -1,7 +1,8 @@
 import sys
 import os
+import time
 from tabulate import tabulate
-from datetime import datetime
+from datetime import datetime, timedelta
 from haversine import haversine, Unit
 from math import cos, radians
 # Add parent directory to path for imports
@@ -188,78 +189,7 @@ class TaxiAnalysisService:
         except Exception as e:
             print(f"Error in question 7: {e}")
     
-    def question_8_taxi_proximity_pairs(self):
-        """Question 8: Taxi proximity pairs"""
-        print("\n" + "=" * 60)
-        print("QUESTION 8: Taxi Proximity Pairs (within 5m and 5s)")
-        print("=" * 60)
-        
-        try:
-            # Set your overall historical range here
-            # Example: A full month of data
-            start_date_str = '2014-06-01 00:00:00'
-            end_date_str = '2014-06-01 11:59:59' # Example for a full month
-            
-            # Convert to UNIX timestamps for the function call
-            overall_start_ts = int(datetime.strptime(start_date_str, '%Y-%m-%d %H:%M:%S').timestamp())
-            overall_end_ts = int(datetime.strptime(end_date_str, '%Y-%m-%d %H:%M:%S').timestamp())
-
-            # Adjust window_size_seconds and overlap_seconds if needed
-            candidate_pairs = self.trips_repo.get_taxi_proximity_pairs_sliding_window_historical(
-                overall_start_timestamp_unix=overall_start_ts,
-                overall_end_timestamp_unix=overall_end_ts,
-                window_size_seconds=3600, # 1 hour
-                overlap_seconds=5 # Must be at least the max time_diff_seconds (5 seconds)
-            )
-            
-            print(f"Found {len(candidate_pairs)} raw candidate pairs based on time proximity.")
-
-            proximity_pairs = []
-            
-            if candidate_pairs:
-                for i, pair in enumerate(candidate_pairs):
-                   
-                    # Let's adjust the indices for is_within_5m to match your SELECT statement's order
-                    if self.is_within_5m(
-                        (
-                            pair[0], pair[1], # taxi_ids
-                            pair[2], pair[3], # timestamps
-                            pair[5], pair[4], # lat1, lon1 (Haversine usually expects lat, lon)
-                            pair[7], pair[6]  # lat2, lon2
-                        )
-                    ):
-                        # This print is for debugging; remove for production
-                        # print(f"Taxi pair ({pair[0]}, {pair[1]}) at {datetime.fromtimestamp(pair[2])} is within 5m")
-                        proximity_pairs.append(pair)
-            print(f"Found {len(proximity_pairs)} final taxi pairs that were within 5m and 5s")
-            # print(proximity_pairs) # Only print if the list is not too large
-            
-        except Exception as e:
-            print(f"Error in question 8: {e}")
-            import traceback
-            traceback.print_exc() # For better debugging
-
-
-    # Ensure the haversine and lon_deg_per_m_at are correctly defined within the class or available
-    # For lon_deg_per_m_at, I'll move it into the class and ensure radians is imported.
-
-    def is_within_5m(self, candidate_pair_tuple):
-       
-        lat1 = candidate_pair_tuple[4] # Corrected: latitude_1
-        lon1 = candidate_pair_tuple[5] # Corrected: longitude_1
-        lat2 = candidate_pair_tuple[6] # Corrected: latitude_2
-        lon2 = candidate_pair_tuple[7] # Corrected: longitude_2
-
-        # Optional: Add a quick bounding box check *before* Haversine if desired for more speed,
-        # but Haversine itself is usually fast enough on this pre-filtered data.
-        # Haversine is usually more accurate than simple degree-per-meter approximations.
-        return haversine(lat1, lon1, lat2, lon2) <= 5
-
-    def lon_deg_per_m_at(self, lat):
-        # This is for your previous is_within_5m which approximated distance.
-        # If using haversine, this method might not be directly used for the final 5m check.
-        # Keep it if you have other uses, but for Q8, haversine is more robust.
-        return 1.0 / (111_320.0 * max(0.1, cos(radians(lat))))
+  
     
     def question_9_midnight_crossing_trips(self):
         """Question 9: Midnight crossing trips"""
@@ -323,6 +253,8 @@ class TaxiAnalysisService:
         except Exception as e:
             print(f"Error in question 11: {e}")
     
+   
+    
     def run_all_questions(self):
         """Run all analysis questions"""
         print("PORTO TAXI DATA ANALYSIS")
@@ -334,10 +266,10 @@ class TaxiAnalysisService:
             # self.question_2_average_trips_per_taxi()
             # self.question_3_top_20_taxis()
             # self.question_4_call_type_analysis()
-            # self.question_5_hours_and_distance()
-            # self.question_6_porto_city_hall_trips()
-            # self.question_7_invalid_trips()
-            self.question_8_taxi_proximity_pairs()
+            self.question_5_hours_and_distance()
+            self.question_6_porto_city_hall_trips()
+            self.question_7_invalid_trips()
+            #Question 8 is ran in run_task8_sliding_window.py
             self.question_9_midnight_crossing_trips()
             self.question_10_circular_trips()
             self.question_11_idle_times()
@@ -352,6 +284,8 @@ class TaxiAnalysisService:
             traceback.print_exc()
         finally:
             self.close_connections()
+
+        
     
     def close_connections(self):
         """Close all database connections"""
