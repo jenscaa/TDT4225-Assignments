@@ -110,7 +110,7 @@ class TripsRepository:
             ts_end,
             distance_start_end_m as start_end_distance
         FROM trips
-        WHERE distance_start_end_m <= %s
+        WHERE distance_start_end_m <= %s and n_points > 2 and distance_start_end_m > 0
         """
         self.cursor.execute(query, (distance_meters,))
         return self.cursor.fetchall()

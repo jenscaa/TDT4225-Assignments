@@ -262,14 +262,14 @@ class TaxiAnalysisService:
         print(f"Analysis started at: {datetime.now()}")
         
         try:
-            # self.question_1_basic_counts()
-            # self.question_2_average_trips_per_taxi()
-            # self.question_3_top_20_taxis()
-            # self.question_4_call_type_analysis()
+            self.question_1_basic_counts()
+            self.question_2_average_trips_per_taxi()
+            self.question_3_top_20_taxis()
+            self.question_4_call_type_analysis()
             self.question_5_hours_and_distance()
             self.question_6_porto_city_hall_trips()
             self.question_7_invalid_trips()
-            #Question 8 is ran in run_task8_sliding_window.py
+            # Question 8 is ran in run_task8_sliding_window.py
             self.question_9_midnight_crossing_trips()
             self.question_10_circular_trips()
             self.question_11_idle_times()
