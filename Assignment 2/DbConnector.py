@@ -17,9 +17,9 @@ class DbConnector:
 
     def __init__(self,
                  HOST="localhost",
-                 DATABASE="porto_taxi_domain",
+                 DATABASE="porto_taxi_test",
                  USER="root",
-                 PASSWORD="password"):
+                 PASSWORD="pass"):
         # Store connection parameters for reconnection
         self.HOST = HOST
         self.DATABASE = DATABASE

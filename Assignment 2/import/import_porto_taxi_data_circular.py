@@ -4,7 +4,7 @@ import sys
 import os
 from datetime import datetime
 import time
-import mysql.connector  # <-- ADD THIS IMPORT
+import mysql.connector
 
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
@@ -14,6 +14,7 @@ class CircularDomainPortoTaxiDataImporter:
     """
     Porto taxi data importer using circular domain approach for spatial indexing.
     Stores a middle point and radius for each trip instead of H3 cells.
+    SIMPLIFIED: Uses latest-wins strategy - always keep the latest trip_id
     """
 
     def __init__(self, batch_size=5000, resume_from_row=0):
@@ -31,6 +32,9 @@ class CircularDomainPortoTaxiDataImporter:
         # Batch collection
         self.trips_batch = []
         
+        # SIMPLIFIED: Just track latest trip_ids seen
+        self.latest_trip_ids = {}  # trip_id -> latest_row_data
+        
         # Statistics
         self.stats = {
             'rows_processed': 0,
@@ -38,14 +42,27 @@ class CircularDomainPortoTaxiDataImporter:
             'trips_skipped': 0,
             'total_points': 0,
             'total_radius': 0,
+            'duplicates_overwritten': 0,
             'start_time': time.time()
         }
+
+    def _haversine_distance(self, lat1, lon1, lat2, lon2):
+        """Calculate distance between two points in meters"""
+        import math
+        R = 6371000  # Earth radius in meters
+        phi1, phi2 = math.radians(lat1), math.radians(lat2)
+        delta_phi = math.radians(lat2 - lat1)
+        delta_lambda = math.radians(lon2 - lon1)
+        a = math.sin(delta_phi/2)**2 + math.cos(phi1) * math.cos(phi2) * math.sin(delta_lambda/2)**2
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+        return R * c
 
     def import_data(self, csv_file_path):
         """
         Main import function with circular domain generation
         """
         print("Starting Circular Domain Porto taxi data import...")
+        print("SIMPLIFIED: Latest-wins strategy - always keep the latest trip_id")
         print(f"Resuming from row {self.resume_from_row}")
         print(f"Batch size: {self.batch_size}")
         print(f"Domain calculation: {self.TIME_PER_POINT}s per point, max speed {self.MAX_SPEED_KMH} km/h")
@@ -103,8 +120,9 @@ class CircularDomainPortoTaxiDataImporter:
     def import_trips_with_circular_domains(self, csv_file_path):
         """
         Import trips with JSON polyline and circular domain generation
+        SIMPLIFIED: Always keep the latest version of each trip_id
         """
-        print("Importing trips with circular domains...")
+        print("Importing trips with circular domains (latest-wins strategy)...")
         
         batch_count = 0
         last_progress_time = time.time()
@@ -123,6 +141,17 @@ class CircularDomainPortoTaxiDataImporter:
                 if row['MISSING_DATA'].lower() == 'true':
                     self.stats['trips_skipped'] += 1
                     continue
+                
+                # SIMPLIFIED: Always store the latest version of each trip_id
+                trip_id = row['TRIP_ID']
+                
+                if trip_id in self.latest_trip_ids:
+                    # We've seen this trip_id before - this is the latest version
+                    print(f"  OVERWRITING: {trip_id} - keeping latest version")
+                    self.stats['duplicates_overwritten'] += 1
+                
+                # Store this as the latest version
+                self.latest_trip_ids[trip_id] = row
                 
                 # Process trip
                 if self._process_trip_row(row):
@@ -194,12 +223,24 @@ class CircularDomainPortoTaxiDataImporter:
             # Calculate circular domain using the already calculated time
             middle_lat, middle_lon, radius = self._calculate_circular_domain(polyline, time_seconds)
             self.stats['total_radius'] += radius
-            
-            # Add to trips batch
+
+            # Calculate trip distance (sum of all segments)
+            trip_distance = 0.0
+            for i in range(len(polyline) - 1):
+                lon1, lat1 = polyline[i]
+                lon2, lat2 = polyline[i + 1]
+                trip_distance += self._haversine_distance(lat1, lon1, lat2, lon2)
+
+            # Calculate start-to-end distance (straight line)
+            start_lon, start_lat = polyline[0]
+            end_lon, end_lat = polyline[-1]
+            distance_start_end = self._haversine_distance(start_lat, start_lon, end_lat, end_lon)
+
+            # Add to trips batch - SIMPLIFIED: just trip_id as primary key
             self.trips_batch.append((
                 trip_id,
-                taxi_id,
                 call_type,
+                taxi_id,
                 origin_call,
                 origin_stand,
                 ts_start,
@@ -211,7 +252,9 @@ class CircularDomainPortoTaxiDataImporter:
                 middle_lat,
                 middle_lon,
                 radius,
-                start_epoch
+                start_epoch,
+                trip_distance,        # Total path distance
+                distance_start_end    # Straight-line start to end
             ))
             
             return True
@@ -253,7 +296,8 @@ class CircularDomainPortoTaxiDataImporter:
 
     def _insert_trips_batch(self):
         """
-        Insert a batch of trips with circular domains (with auto-reconnect)
+        Insert a batch of trips with circular domains
+        SIMPLIFIED: Uses INSERT ... ON DUPLICATE KEY UPDATE for latest-wins
         """
         if not self.trips_batch:
             return
@@ -261,16 +305,61 @@ class CircularDomainPortoTaxiDataImporter:
         max_retries = 3
         for attempt in range(max_retries):
             try:
-                # Insert trips
+                # SIMPLIFIED: Use INSERT ... ON DUPLICATE KEY UPDATE for latest-wins
                 self.cursor.executemany("""
-                INSERT INTO Trips (trip_id, taxi_id, call_type, origin_call, origin_stand, 
+                INSERT INTO Trips (trip_id, call_type, taxi_id, origin_call, origin_stand, 
                                  ts_start, ts_end, daytype, missing_data, n_points, polyline, 
-                                 domain_middle_lat, domain_middle_lon, domain_radius, start_epoch)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                ON DUPLICATE KEY UPDATE trip_id = trip_id
+                                 domain_middle_lat, domain_middle_lon, domain_radius, start_epoch, 
+                                 trip_distance_m, distance_start_end_m)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                ON DUPLICATE KEY UPDATE
+                    call_type = VALUES(call_type),
+                    taxi_id = VALUES(taxi_id),
+                    origin_call = VALUES(origin_call),
+                    origin_stand = VALUES(origin_stand),
+                    ts_start = VALUES(ts_start),
+                    ts_end = VALUES(ts_end),
+                    daytype = VALUES(daytype),
+                    missing_data = VALUES(missing_data),
+                    n_points = VALUES(n_points),
+                    polyline = VALUES(polyline),
+                    domain_middle_lat = VALUES(domain_middle_lat),
+                    domain_middle_lon = VALUES(domain_middle_lon),
+                    domain_radius = VALUES(domain_radius),
+                    start_epoch = VALUES(start_epoch),
+                    trip_distance_m = VALUES(trip_distance_m),
+                    distance_start_end_m = VALUES(distance_start_end_m),
+                    import_timestamp = CURRENT_TIMESTAMP
                 """, self.trips_batch)
                 
                 self.db_connection.commit()
+
+                # Explode GPS points in SMALLER sub-batches
+                gps_points_batch = []
+                GPS_BATCH_SIZE = 2000  # REDUCED to 2k points at a time
+                
+                for trip in self.trips_batch:
+                    trip_id = trip[0]
+                    taxi_id = trip[2]
+                    polyline_json = trip[10]
+                    start_epoch = trip[14]
+                    
+                    polyline = json.loads(polyline_json)
+                    
+                    for idx, (lon, lat) in enumerate(polyline):
+                        point_timestamp = start_epoch + idx * self.TIME_PER_POINT
+                        gps_points_batch.append((
+                            trip_id, taxi_id, idx, lat, lon, point_timestamp
+                        ))
+                        
+                        # Insert when batch reaches size limit
+                        if len(gps_points_batch) >= GPS_BATCH_SIZE:
+                            self._insert_gps_points_sub_batch(gps_points_batch)
+                            gps_points_batch = []
+                
+                # Insert remaining GPS points
+                if gps_points_batch:
+                    self._insert_gps_points_sub_batch(gps_points_batch)
                 
                 # Clear batch
                 self.trips_batch = []
@@ -284,7 +373,7 @@ class CircularDomainPortoTaxiDataImporter:
                     
                     # Try to identify and skip the problematic trip
                     for trip in self.trips_batch:
-                        trip_id, taxi_id, call_type, origin_call, origin_stand, ts_start, ts_end, *rest = trip
+                        trip_id, call_type, taxi_id, origin_call, origin_stand, ts_start, ts_end, *rest = trip
                         if ts_end < ts_start:
                             print(f"  Problem trip: {trip_id} - ts_start={ts_start}, ts_end={ts_end}")
                     
@@ -324,6 +413,25 @@ class CircularDomainPortoTaxiDataImporter:
                     print("Could not rollback - connection may be lost")
                 raise
 
+    def _insert_gps_points_sub_batch(self, gps_points_batch):
+        """Insert GPS points with retry logic - SIMPLIFIED: no call_type"""
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                self.cursor.executemany("""
+                INSERT INTO gps_points (trip_id, taxi_id, point_index, latitude, longitude, point_timestamp)
+                VALUES (%s, %s, %s, %s, %s, %s)
+                ON DUPLICATE KEY UPDATE point_timestamp = point_timestamp
+                """, gps_points_batch)
+                self.db_connection.commit()
+                return  # Success
+            except mysql.connector.errors.OperationalError as e:
+                if attempt < max_retries - 1:
+                    print(f"  GPS points connection error (attempt {attempt+1}/{max_retries}), reconnecting...")
+                    if self.connection.reconnect():
+                        continue
+                raise
+
     def _flush_remaining_batches(self):
         """
         Process any remaining data in batches
@@ -348,7 +456,8 @@ class CircularDomainPortoTaxiDataImporter:
               f"Points: {self.stats['total_points']:,} | "
               f"Avg Radius: {avg_radius:.0f}m | "
               f"Rate: {rows_per_sec:.1f} rows/s, {trips_per_sec:.1f} trips/s | "
-              f"Batches: {batch_count}")
+              f"Batches: {batch_count} | "
+              f"Overwritten: {self.stats['duplicates_overwritten']}")
 
     def _print_final_statistics(self, start_time, end_time):
         """
@@ -372,6 +481,12 @@ class CircularDomainPortoTaxiDataImporter:
         print(f"Average domain radius: {avg_radius:.0f} meters ({avg_radius/1000:.2f} km)")
         print(f"Processing rate: {self.stats['rows_processed'] / elapsed:.1f} rows/second")
         print(f"Import rate: {self.stats['trips_imported'] / elapsed:.1f} trips/second")
+        
+        # SIMPLIFIED: Latest-wins statistics
+        print(f"\nLATEST-WINS STATISTICS:")
+        print(f"  Duplicate trip_ids overwritten: {self.stats['duplicates_overwritten']}")
+        print(f"  Final unique trip_ids: {len(self.latest_trip_ids):,}")
+        
         print("="*80)
 
     def close_connection(self):
@@ -395,11 +510,13 @@ def main():
         print("- Calculated end time (ts_start + n_points * 15s)")
         print("- Minimal storage footprint")
         print("- Auto-reconnect on connection loss")
+        print("- SIMPLIFIED: Single primary key on trip_id")
+        print("- NEW: Latest-wins strategy - always keep latest version")
         print("="*60)
         
         # Configuration
-        batch_size = 5000
-        resume_from_row = 551000  # <-- UPDATE THIS to resume from where it crashed
+        batch_size = 500
+        resume_from_row = 0  # <-- UPDATE THIS to resume from where it crashed
         
         print(f"\n⚠ RESUMING FROM ROW {resume_from_row}")
         print("Change resume_from_row in main() to adjust starting point\n")
