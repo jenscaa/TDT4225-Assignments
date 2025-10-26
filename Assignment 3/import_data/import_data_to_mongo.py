@@ -246,7 +246,11 @@ def load_ratings(data_dir: Path, movieId_to_tmdb: Dict[int, int]):
     ratings = pd.read_csv(ratings_path)
 
     docs = []
-    for _, r in ratings.iterrows():
+    rows = ratings.iterrows()
+    if tqdm:
+        rows = tqdm(ratings.iterrows(), total=len(ratings), desc="load_ratings", unit="row")
+
+    for i, r in rows:
         ml_id = to_int(r.get("movieId"))
         tmdb = movieId_to_tmdb.get(ml_id)
         if not tmdb:
@@ -257,22 +261,22 @@ def load_ratings(data_dir: Path, movieId_to_tmdb: Dict[int, int]):
         user_id = to_int(r.get("userId"))
         if user_id is None or rating is None:
             continue
-        docs.append({
-            "userId": user_id,
-            "movie_tmdb": tmdb,
-            "rating": rating,
-            "timestamp": ts_dt,
-        })
+        docs.append({"userId": user_id, "movie_tmdb": tmdb, "rating": rating, "timestamp": ts_dt})
+
+        if not tqdm and len(docs) % 20000 == 0:
+            logger.info(f"Prepared {len(docs)} rating docs so far...")
+
     return docs
 
 
 def import_ratings(db, rating_docs: List[Dict], *, drop_first: bool = True, batch_size: int = 5000):
     coll = db["ratings"]
     if drop_first:
+        logger.info("Dropping collection 'ratings'...")
         coll.drop()
 
     ops, total = [], 0
-    for doc in rating_docs:
+    for i, doc in enumerate(rating_docs, 1):
         ops.append(UpdateOne(
             {"userId": doc["userId"], "movie_tmdb": doc["movie_tmdb"]},
             {"$set": doc},
@@ -281,11 +285,12 @@ def import_ratings(db, rating_docs: List[Dict], *, drop_first: bool = True, batc
         if len(ops) >= batch_size:
             coll.bulk_write(ops, ordered=False)
             total += len(ops)
+            logger.info(f"Ratings upserted: {total}")
             ops = []
     if ops:
         coll.bulk_write(ops, ordered=False)
         total += len(ops)
-    print(f"Upserted {total} rating documents.")
+        logger.info(f"Ratings upserted (final): {total}")
 
 
 def create_indexes(db):
@@ -294,6 +299,7 @@ def create_indexes(db):
 
     # Text search for noir queries
     movies.create_index([("overview", TEXT), ("tagline", TEXT)], name="movies_text")
+    logger.info("Created text index")
 
     # Director / crew queries
     movies.create_index([("crew.job", ASCENDING), ("crew.id", ASCENDING)], name="idx_crew_job_id")
@@ -328,6 +334,7 @@ def create_indexes(db):
     ratings.create_index([("userId", ASCENDING)], name="idx_ratings_user")
     ratings.create_index([("movie_tmdb", ASCENDING)], name="idx_ratings_movie")
     ratings.create_index([("userId", ASCENDING), ("movie_tmdb", ASCENDING)], unique=True, name="idx_user_movie_unique")
+    logger.info("Indexes created.")
 
 
 def main():
@@ -339,27 +346,46 @@ def main():
     conn = DbConnector()
     db = conn.db
 
+    t0 = time.perf_counter()
+    logger.info("Connecting and starting import...")
+
     try:
-        # Load support maps
+        logger.info("Loading links mapping...")
         movieId_to_tmdb, tmdb_to_imdb = load_links_mapping(data_dir)
+        logger.info(f"links: {len(movieId_to_tmdb)} ml->tmdb, {len(tmdb_to_imdb)} tmdb->imdb")
+
+        logger.info("Loading keywords and credits...")
         kw_map = load_keywords_map(data_dir)
         cast_map, crew_map = load_credits_maps(data_dir)
+        logger.info(f"keywords: {len(kw_map)}, cast: {len(cast_map)}, crew: {len(crew_map)}")
 
-        # Build movie docs from metadata + credits + keywords + imdb mapping
+        logger.info("Building movie docs...")
+        t_build = time.perf_counter()
         movie_docs = build_movie_docs(data_dir, tmdb_to_imdb, cast_map, crew_map, kw_map)
+        logger.info(f"Built {len(movie_docs)} movies in {time.perf_counter() - t_build:.1f}s")
+
+        logger.info("Importing movies...")
+        t_movies = time.perf_counter()
         import_movies(db, movie_docs, drop_first=True)
+        logger.info(f"Movies imported in {time.perf_counter() - t_movies:.1f}s")
 
-        # Build and import ratings with TMDB id mapping
+        logger.info("Preparing ratings...")
+        t_rprep = time.perf_counter()
         rating_docs = load_ratings(data_dir, movieId_to_tmdb)
+        logger.info(f"Prepared {len(rating_docs)} ratings in {time.perf_counter() - t_rprep:.1f}s")
+
+        logger.info("Importing ratings...")
+        t_ratings = time.perf_counter()
         import_ratings(db, rating_docs, drop_first=True)
+        logger.info(f"Ratings imported in {time.perf_counter() - t_ratings:.1f}s")
 
-        # Create indexes for performance on the 10 tasks
         create_indexes(db)
-
-        print("Import and indexing completed.")
+        logger.info(f"Done. Total time: {time.perf_counter() - t0:.1f}s")
     except BulkWriteError as bwe:
+        logger.exception("Bulk write error")
         print("Bulk write error:", bwe.details)
     except Exception as e:
+        logger.exception("ERROR during import")
         print("ERROR during import:", e)
     finally:
         conn.close_connection()
