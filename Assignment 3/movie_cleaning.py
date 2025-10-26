@@ -131,12 +131,3 @@ for name, df_cleaned in clean_datasets.items():
     output_path = f"cleaned_data/{name}_cleaned.csv"
     df_cleaned.to_csv(output_path, index=False)
     print(f"Saved cleaned {name} → {output_path}")
-
-# Copy untouched datasets
-for name, df_raw in {
-    "links_merged": df_links_merged,
-    "ratings_merged": df_ratings_merged,
-}.items():
-    output_path = f"cleaned_data/{name}.csv"
-    df_raw.to_csv(output_path, index=False)
-    print(f"Copied raw {name} → {output_path}")
