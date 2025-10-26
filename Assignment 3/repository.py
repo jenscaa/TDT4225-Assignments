@@ -235,32 +235,40 @@ class Repository:
 
     # 7) Text search for "noir" or "neo-noir" with vote_count >= 50; top 20 by vote_average
     def top_noir_movies(self) -> List[Dict[str, Any]]:
-        # Phase 1: text search (fast if text index exists)
-        text_pipeline = [
-            {"$match": {
-                "vote_count": {"$gte": 50},
-                "$text": {"$search": 'noir "neo noir" neo-noir'}
-            }},
-            {"$project": {"title": 1, "year": 1, "vote_average": 1, "vote_count": 1}},
-            {"$sort": {"vote_average": -1, "vote_count": -1}},
-            {"$limit": 20},
-        ]
-        rows = list(self.movies.aggregate(text_pipeline, allowDiskUse=True))
-        if rows:
-            return rows
+        # Ensure these indexes exist once (run in your index setup):
+        # self.db["movies"].create_index([("keywords.name", 1)], name="idx_keywords_name")
 
-        # Phase 2: regex fallback (handles hyphen/space variants; slower)
-        regex = {"$regex": r"(?i)\b(neo[- ]?noir|noir)\b"}
-        regex_pipeline = [
-            {"$match": {
-                "vote_count": {"$gte": 50},
-                "$or": [{"overview": regex}, {"tagline": regex}]
+        pipeline = [
+            # Branch A: text search (must be first)
+            {"$match": {"$text": {"$search": 'noir "neo noir" neo-noir'}}},
+            {"$match": {"vote_count": {"$gte": 50}}},
+            {"$project": {
+                "_id": 1, "title": 1, "year": 1, "vote_average": 1, "vote_count": 1,
+                "source": {"$literal": "text"}
             }},
-            {"$project": {"title": 1, "year": 1, "vote_average": 1, "vote_count": 1}},
+            # Merge with Branch B: keywords regex
+            {"$unionWith": {
+                "coll": "movies",
+                "pipeline": [
+                    {"$match": {"vote_count": {"$gte": 50}}},
+                    {"$match": {"$or": [
+                        {"keywords.name": {"$regex": r"(?i)\bneo[- ]?noir\b"}},
+                        {"keywords.name": {"$regex": r"(?i)\bnoir\b"}},
+                    ]}},
+                    {"$project": {
+                        "_id": 1, "title": 1, "year": 1, "vote_average": 1, "vote_count": 1,
+                        "source": {"$literal": "keywords"}
+                    }},
+                ]
+            }},
+            # Deduplicate by movie
+            {"$group": {"_id": "$_id", "doc": {"$first": "$$ROOT"}}},
+            {"$replaceRoot": {"newRoot": "$doc"}},
             {"$sort": {"vote_average": -1, "vote_count": -1}},
             {"$limit": 20},
+            {"$project": {"_id": 0, "title": 1, "year": 1, "vote_average": 1, "vote_count": 1}}
         ]
-        return list(self.movies.aggregate(regex_pipeline, allowDiskUse=True))
+        return list(self.movies.aggregate(pipeline, allowDiskUse=True))
 
     # 8) Top 20 director–actor pairs (>= 3 collaborations; movies vote_count >= 100) by mean vote_average; include films count and mean revenue
     def top_director_actor_pairs(self) -> List[Dict[str, Any]]:
