@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "label": "Q7 Top noir / neo-noir movies",
+    "duration_sec": 0.203,
+    "count": 5
+  },
+  "data": [
+    {
+      "_id": 31589,
+      "title": "The Bad Sleep Well",
+      "vote_average": 7.7,
+      "vote_count": 57,
+      "year": 1960
+    },
+    {
+      "_id": 25858,
+      "title": "Drunken Angel",
+      "vote_average": 7.7,
+      "vote_count": 54,
+      "year": 1948
+    },
+    {
+      "_id": 1093,
+      "title": "Elevator to the Gallows",
+      "vote_average": 7.6,
+      "vote_count": 85,
+      "year": 1958
+    },
+    {
+      "_id": 347945,
+      "title": "Synchronicity",
+      "vote_average": 5.7,
+      "vote_count": 114,
+      "year": 2015
+    },
+    {
+      "_id": 316021,
+      "title": "Frank & Lola",
+      "vote_average": 5.7,
+      "vote_count": 51,
+      "year": 2016
+    }
+  ]
+}

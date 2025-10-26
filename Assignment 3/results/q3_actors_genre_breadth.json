@@ -1,0 +1,139 @@
+{
+  "meta": {
+    "label": "Q3 Actors genre breadth (top 10)",
+    "duration_sec": 2.145,
+    "count": 10
+  },
+  "data": [
+    {
+      "actor_id": 113,
+      "actor": "Christopher Lee",
+      "genre_count": 20,
+      "movie_count": 144,
+      "example_genres": [
+        "Music",
+        "Thriller",
+        "Horror",
+        "Science Fiction",
+        "Comedy"
+      ]
+    },
+    {
+      "actor_id": 55636,
+      "actor": "Donald Sutherland",
+      "genre_count": 20,
+      "movie_count": 106,
+      "example_genres": [
+        "Family",
+        "History",
+        "Romance",
+        "Action",
+        "Western"
+      ]
+    },
+    {
+      "actor_id": 4690,
+      "actor": "Christopher Walken",
+      "genre_count": 20,
+      "movie_count": 96,
+      "example_genres": [
+        "History",
+        "Family",
+        "Mystery",
+        "Crime",
+        "Fantasy"
+      ]
+    },
+    {
+      "actor_id": 2778,
+      "actor": "Dennis Hopper",
+      "genre_count": 20,
+      "movie_count": 90,
+      "example_genres": [
+        "Action",
+        "Fantasy",
+        "Crime",
+        "Family",
+        "Mystery"
+      ]
+    },
+    {
+      "actor_id": 65827,
+      "actor": "Keith David",
+      "genre_count": 20,
+      "movie_count": 87,
+      "example_genres": [
+        "History",
+        "Romance",
+        "Mystery",
+        "Family",
+        "Crime"
+      ]
+    },
+    {
+      "actor_id": 3896,
+      "actor": "Liam Neeson",
+      "genre_count": 20,
+      "movie_count": 82,
+      "example_genres": [
+        "Documentary",
+        "Western",
+        "Adventure",
+        "Animation",
+        "Thriller"
+      ]
+    },
+    {
+      "actor_id": 15152,
+      "actor": "James Earl Jones",
+      "genre_count": 20,
+      "movie_count": 77,
+      "example_genres": [
+        "Science Fiction",
+        "Comedy",
+        "Thriller",
+        "Horror",
+        "Documentary"
+      ]
+    },
+    {
+      "actor_id": 388,
+      "actor": "Jim Broadbent",
+      "genre_count": 20,
+      "movie_count": 77,
+      "example_genres": [
+        "Romance",
+        "History",
+        "Mystery",
+        "Family",
+        "Crime"
+      ]
+    },
+    {
+      "actor_id": 8349,
+      "actor": "Martin Sheen",
+      "genre_count": 20,
+      "movie_count": 75,
+      "example_genres": [
+        "Foreign",
+        "Horror",
+        "Comedy",
+        "Drama",
+        "Science Fiction"
+      ]
+    },
+    {
+      "actor_id": 13726,
+      "actor": "Ned Beatty",
+      "genre_count": 20,
+      "movie_count": 70,
+      "example_genres": [
+        "Thriller",
+        "Music",
+        "Comedy",
+        "Science Fiction",
+        "War"
+      ]
+    }
+  ]
+}

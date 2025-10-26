@@ -1,0 +1,189 @@
+{
+  "meta": {
+    "label": "Q8 Top director–actor pairs",
+    "duration_sec": 0.732,
+    "count": 20
+  },
+  "data": [
+    {
+      "director_id": 1776,
+      "director": "Francis Ford Coppola",
+      "actor_id": 38803,
+      "actor": "Roman Coppola",
+      "films": 3,
+      "mean_vote_average": 8.366666666666667,
+      "mean_revenue": 113384031.0
+    },
+    {
+      "director_id": 13848,
+      "director": "Charlie Chaplin",
+      "actor_id": 13856,
+      "actor": "Hank Mann",
+      "films": 3,
+      "mean_vote_average": 8.133333333333333,
+      "mean_revenue": 6506393.666666667
+    },
+    {
+      "director_id": 5026,
+      "director": "Akira Kurosawa",
+      "actor_id": 552176,
+      "actor": "Haruo Suzuki",
+      "films": 3,
+      "mean_vote_average": 8.133333333333333,
+      "mean_revenue": 90613.66666666667
+    },
+    {
+      "director_id": 5026,
+      "director": "Akira Kurosawa",
+      "actor_id": 552175,
+      "actor": "Minoru Itô",
+      "films": 3,
+      "mean_vote_average": 8.133333333333333,
+      "mean_revenue": 90613.66666666667
+    },
+    {
+      "director_id": 5026,
+      "director": "Akira Kurosawa",
+      "actor_id": 106165,
+      "actor": "Eijirô Tôno",
+      "films": 3,
+      "mean_vote_average": 8.133333333333333,
+      "mean_revenue": 90613.66666666667
+    },
+    {
+      "director_id": 5026,
+      "director": "Akira Kurosawa",
+      "actor_id": 134406,
+      "actor": "Toranosuke Ogawa",
+      "films": 3,
+      "mean_vote_average": 8.1,
+      "mean_revenue": 109027.0
+    },
+    {
+      "director_id": 5026,
+      "director": "Akira Kurosawa",
+      "actor_id": 134294,
+      "actor": "Atsushi Watanabe",
+      "films": 3,
+      "mean_vote_average": 8.1,
+      "mean_revenue": 109027.0
+    },
+    {
+      "director_id": 1776,
+      "director": "Francis Ford Coppola",
+      "actor_id": 3096,
+      "actor": "John Cazale",
+      "films": 3,
+      "mean_vote_average": 8.1,
+      "mean_revenue": 99009750.66666667
+    },
+    {
+      "director_id": 138,
+      "director": "Quentin Tarantino",
+      "actor_id": 1037,
+      "actor": "Harvey Keitel",
+      "films": 3,
+      "mean_vote_average": 8.1,
+      "mean_revenue": 182573606.33333334
+    },
+    {
+      "director_id": 5026,
+      "director": "Akira Kurosawa",
+      "actor_id": 552180,
+      "actor": "Ichirô Chiba",
+      "films": 4,
+      "mean_vote_average": 8.075,
+      "mean_revenue": 81770.25
+    },
+    {
+      "director_id": 5026,
+      "director": "Akira Kurosawa",
+      "actor_id": 7457,
+      "actor": "Daisuke Katô",
+      "films": 4,
+      "mean_vote_average": 8.075,
+      "mean_revenue": 105912.25
+    },
+    {
+      "director_id": 1776,
+      "director": "Francis Ford Coppola",
+      "actor_id": 3087,
+      "actor": "Robert Duvall",
+      "films": 4,
+      "mean_vote_average": 8.075,
+      "mean_revenue": 96622408.25
+    },
+    {
+      "director_id": 5026,
+      "director": "Akira Kurosawa",
+      "actor_id": 7456,
+      "actor": "Noriko Honma",
+      "films": 4,
+      "mean_vote_average": 8.075,
+      "mean_revenue": 105912.25
+    },
+    {
+      "director_id": 5026,
+      "director": "Akira Kurosawa",
+      "actor_id": 552170,
+      "actor": "Shôichi Hirose",
+      "films": 3,
+      "mean_vote_average": 8.066666666666666,
+      "mean_revenue": 90613.66666666667
+    },
+    {
+      "director_id": 5026,
+      "director": "Akira Kurosawa",
+      "actor_id": 30907,
+      "actor": "Susumu Fujita",
+      "films": 3,
+      "mean_vote_average": 8.066666666666666,
+      "mean_revenue": 0.0
+    },
+    {
+      "director_id": 5026,
+      "director": "Akira Kurosawa",
+      "actor_id": 552184,
+      "actor": "Haruya Sakamoto",
+      "films": 3,
+      "mean_vote_average": 8.066666666666666,
+      "mean_revenue": 90613.66666666667
+    },
+    {
+      "director_id": 5026,
+      "director": "Akira Kurosawa",
+      "actor_id": 20830,
+      "actor": "Isao Kimura",
+      "films": 4,
+      "mean_vote_average": 8.05,
+      "mean_revenue": 81770.25
+    },
+    {
+      "director_id": 5026,
+      "director": "Akira Kurosawa",
+      "actor_id": 7454,
+      "actor": "Minoru Chiaki",
+      "films": 6,
+      "mean_vote_average": 8.033333333333333,
+      "mean_revenue": 70608.16666666667
+    },
+    {
+      "director_id": 108,
+      "director": "Peter Jackson",
+      "actor_id": 1330,
+      "actor": "Dominic Monaghan",
+      "films": 3,
+      "mean_vote_average": 8.033333333333333,
+      "mean_revenue": 972181581.0
+    },
+    {
+      "director_id": 608,
+      "director": "Hayao Miyazaki",
+      "actor_id": 20334,
+      "actor": "Tsunehiko Kamijô",
+      "films": 3,
+      "mean_vote_average": 8.033333333333333,
+      "mean_revenue": 144766801.0
+    }
+  ]
+}

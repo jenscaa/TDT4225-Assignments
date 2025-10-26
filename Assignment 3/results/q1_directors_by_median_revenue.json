@@ -1,0 +1,79 @@
+{
+  "meta": {
+    "label": "Q1 Directors by median revenue (top 10)",
+    "duration_sec": 5.727,
+    "count": 10
+  },
+  "data": [
+    {
+      "director_id": 1,
+      "director": "George Lucas",
+      "movie_count": 7,
+      "median_revenue": 649398328.0,
+      "mean_vote_average": 6.814285714285715
+    },
+    {
+      "director_id": 10943,
+      "director": "Francis Lawrence",
+      "movie_count": 6,
+      "median_revenue": 619388635.5,
+      "mean_vote_average": 6.8
+    },
+    {
+      "director_id": 11343,
+      "director": "David Yates",
+      "movie_count": 10,
+      "median_revenue": 583042696.5,
+      "mean_vote_average": 6.029999999999999
+    },
+    {
+      "director_id": 124748,
+      "director": "Chris Renaud",
+      "movie_count": 5,
+      "median_revenue": 543513985.0,
+      "mean_vote_average": 6.7
+    },
+    {
+      "director_id": 18863,
+      "director": "Eric Darnell",
+      "movie_count": 5,
+      "median_revenue": 532680671.0,
+      "mean_vote_average": 6.34
+    },
+    {
+      "director_id": 18864,
+      "director": "Tom McGrath",
+      "movie_count": 5,
+      "median_revenue": 532680671.0,
+      "mean_vote_average": 6.4
+    },
+    {
+      "director_id": 5714,
+      "director": "Carlos Saldanha",
+      "movie_count": 7,
+      "median_revenue": 484635760.0,
+      "mean_vote_average": 6.042857142857143
+    },
+    {
+      "director_id": 5524,
+      "director": "Andrew Adamson",
+      "movie_count": 6,
+      "median_revenue": 452030315.5,
+      "mean_vote_average": 6.516666666666667
+    },
+    {
+      "director_id": 865,
+      "director": "Michael Bay",
+      "movie_count": 13,
+      "median_revenue": 449220945.0,
+      "mean_vote_average": 6.392307692307692
+    },
+    {
+      "director_id": 7087,
+      "director": "Brad Bird",
+      "movie_count": 6,
+      "median_revenue": 416438570.0,
+      "mean_vote_average": 7.1499999999999995
+    }
+  ]
+}
