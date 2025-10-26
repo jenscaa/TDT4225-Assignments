@@ -8,11 +8,9 @@ import pandas as pd
 # ---- Load raw CSV files ----
 df_credits = pd.read_csv("data/credits.csv")
 df_keywords = pd.read_csv("data/keywords.csv")
-df_links_small = pd.read_csv("data/links_small.csv")
-df_links = pd.read_csv("data/links.csv")
 df_movies_metadata = pd.read_csv("data/movies_metadata.csv", low_memory=False)
-df_ratings_small = pd.read_csv("data/ratings_small.csv")
-df_ratings = pd.read_csv("data/ratings.csv")
+df_links_merged = pd.read_csv("data/links_merged.csv")
+df_ratings_merged = pd.read_csv("data/merged_ratings.csv")
 
 
 # ------------------------------- Utilities -------------------------------- #
@@ -108,6 +106,14 @@ def clean_movies_metadata(df: pd.DataFrame) -> pd.DataFrame:
 
 # ------------------------------- Save cleaned versions -------------------------------- #
 
+def clean_links_merged(df: pd.DataFrame) -> pd.DataFrame:
+    """Clean links merged dataset."""
+    return df
+
+def clean_ratings_merged(df: pd.DataFrame) -> pd.DataFrame:
+    """Clean ratings merged dataset."""
+    return df
+
 # Create folder if it doesn’t exist
 os.makedirs("cleaned_data", exist_ok=True)
 
@@ -116,6 +122,8 @@ clean_datasets = {
     "credits": clean_credits(df_credits),
     "keywords": clean_keywords(df_keywords),
     "movies_metadata": clean_movies_metadata(df_movies_metadata),
+    "links_merged": clean_links_merged(df_links_merged),
+    "ratings_merged": clean_ratings_merged(df_ratings_merged),
 }
 
 # Save cleaned DataFrames
@@ -126,10 +134,8 @@ for name, df_cleaned in clean_datasets.items():
 
 # Copy untouched datasets
 for name, df_raw in {
-    "links": df_links,
-    "links_small": df_links_small,
-    "ratings": df_ratings,
-    "ratings_small": df_ratings_small,
+    "links_merged": df_links_merged,
+    "ratings_merged": df_ratings_merged,
 }.items():
     output_path = f"cleaned_data/{name}.csv"
     df_raw.to_csv(output_path, index=False)

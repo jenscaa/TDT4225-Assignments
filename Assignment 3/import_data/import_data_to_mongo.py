@@ -17,6 +17,19 @@ if str(ROOT) not in sys.path:
 from DbConnector import DbConnector  # noqa: E402
 
 
+import logging, time
+try:
+    from tqdm import tqdm
+except Exception:
+    tqdm = None
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s",
+)
+logger = logging.getLogger("import_pipeline")
+
+
 def safe_eval(val: Any) -> Optional[Any]:
     if pd.isna(val):
         return None
@@ -90,7 +103,7 @@ def compact_list_of_dicts(lst: Optional[List[Dict]], keep_keys: List[str]) -> Op
 
 
 def load_links_mapping(data_dir: Path):
-    links_path = data_dir / "links_merged.csv"
+    links_path = data_dir / "links_merged_cleaned.csv"
     links = pd.read_csv(links_path)
     # Build mapping between MovieLens movieId and TMDB id, and TMDB→IMDb
     movieId_to_tmdb = {}
@@ -107,7 +120,7 @@ def load_links_mapping(data_dir: Path):
 
 
 def load_keywords_map(data_dir: Path):
-    kw_path = data_dir / "keywords.csv"
+    kw_path = data_dir / "keywords_cleaned.csv"
     kw = pd.read_csv(kw_path)
     out = {}
     for _, r in kw.iterrows():
@@ -119,7 +132,7 @@ def load_keywords_map(data_dir: Path):
 
 
 def load_credits_maps(data_dir: Path):
-    cred_path = data_dir / "credits.csv"
+    cred_path = data_dir / "credits_cleaned.csv"
     cred = pd.read_csv(cred_path)
     cast_map, crew_map = {}, {}
     for _, r in cred.iterrows():
@@ -152,7 +165,7 @@ def load_credits_maps(data_dir: Path):
 
 
 def build_movie_docs(data_dir: Path, tmdb_to_imdb: Dict[int, int], cast_map, crew_map, kw_map):
-    meta_path = data_dir / "movies_metadata.csv"
+    meta_path = data_dir / "movies_metadata_cleaned.csv"
     meta = pd.read_csv(meta_path, low_memory=False)
 
     docs = []
@@ -229,7 +242,7 @@ def import_movies(db, movie_docs: List[Dict], *, drop_first: bool = True, batch_
 
 
 def load_ratings(data_dir: Path, movieId_to_tmdb: Dict[int, int]):
-    ratings_path = data_dir / "merged_ratings.csv"
+    ratings_path = data_dir / "ratings_merged_cleaned.csv"
     ratings = pd.read_csv(ratings_path)
 
     docs = []
@@ -320,7 +333,7 @@ def create_indexes(db):
 def main():
     # Resolve paths
     base_dir = ROOT
-    data_dir = base_dir / "data"
+    data_dir = base_dir / "cleaned_data"
 
     # Connect to MongoDB using the provided connector
     conn = DbConnector()
