@@ -1,8 +1,9 @@
+import os
 from ast import literal_eval
 import pandas as pd
-from pathlib import Path
 
 
+# HELPER FUNCTIONS
 def parse_collection(x):
     if isinstance(x, str):
         try:
@@ -12,80 +13,93 @@ def parse_collection(x):
     return None
 
 
-def drop_duplicate_ids(df):
-    """
-    Cleans a DataFrame by ensuring the 'id' column is numeric
-    and dropping duplicate IDs (keeping the first occurrence).
-    """
-
-    # Column id - drop duplicates
-    df["id"] = pd.to_numeric(df["id"], errors="coerce")
-    df.dropna(subset=["id"], inplace=True)
-    df["id"] = df["id"].astype(int)
-
+def convert_to_numeric(df, column, dropna=True, drop_duplicates=False, to_int=False, name=None):
+    """Converts a column to numeric, optionally drops NaN and duplicates."""
+    df[column] = pd.to_numeric(df[column], errors="coerce")
     before = len(df)
-    df = df.drop_duplicates(subset="id", keep="first")
+    if dropna:
+        df.dropna(subset=[column], inplace=True)
+    if to_int:
+        df[column] = df[column].astype(int)
+    if drop_duplicates:
+        df = df.drop_duplicates(subset=column, keep="first")
     after = len(df)
+    label = name or column
+    print(f"\tRemoved {before - after} invalid or duplicate '{label}' entries. Remaining rows: {after}")
+    return df
 
-    print(f"\tRemoved {before - after} duplicate IDs. Remaining rows: {after}")
 
+def ensure_string_column(df, column, fill_empty=False):
+    """Ensures a column is string type, optionally fills NaN with empty string."""
+    df[column] = df[column].astype("string")
+    if fill_empty:
+        df[column] = df[column].fillna("")
+    return df
+
+
+def drop_invalid_strings(df, column):
+    """Removes rows where column is not a string."""
+    df = df[df[column].apply(lambda x: isinstance(x, str))]
+    df = df.reset_index(drop=True)
+    return df
+
+
+def drop_invalid_bool(df, column):
+    """Removes rows where column is not a boolean."""
+    df = df[df[column].apply(lambda x: isinstance(x, bool))]
+    df = df.reset_index(drop=True)
+    return df
+
+
+def add_missing_rows(df, df_small, merge_key, label):
+    """Adds rows from df_small that don't exist in df based on merge_key."""
+    merged = df_small.merge(df[merge_key], on=merge_key, how="left", indicator=True)
+    missing_rows = merged[merged["_merge"] == "left_only"].drop(columns="_merge")
+    print(f"\tFound {len(missing_rows)} new {label} in df_small not present in df. Adding them.")
+    df = pd.concat([df, missing_rows], ignore_index=True)
+    print(f"\tFinal row count after merging: {len(df)}")
+    return df
+
+
+# CLEANING FUNCTIONS
+
+def drop_duplicate_ids(df):
+    """Ensures the 'id' column is numeric and removes duplicates."""
+    df = convert_to_numeric(df, "id", dropna=True, to_int=True, drop_duplicates=True, name="ID")
     return df
 
 
 def drop_duplicate_imdb(df):
-    """
-    Cleans a DataFrame by ensuring the 'imdb_id' column is string-based
-    and dropping duplicate IMDb IDs (keeping the first occurrence).
-    """
-
-    # Column imdb_id - drop duplicates
+    """Ensures 'imdb_id' is string-based and removes duplicates."""
     if "imdb_id" not in df.columns:
         print("\tColumn 'imdb_id' not found in DataFrame.")
         return df
 
-    # Ensure all IMDb IDs are strings
     df["imdb_id"] = df["imdb_id"].astype(str)
-
-    # Drop empty or invalid IMDb IDs
     df["imdb_id"].replace(["", "nan", "None", "NaN"], pd.NA, inplace=True)
     df.dropna(subset=["imdb_id"], inplace=True)
 
     before = len(df)
     df = df.drop_duplicates(subset="imdb_id", keep="first")
     after = len(df)
-
     print(f"\tRemoved {before - after} duplicate IMDb IDs. Remaining rows: {after}")
-
     return df
 
 
-
 def clean_credits(df):
-
-    # Column id - drop duplicates
     df = drop_duplicate_ids(df)
-
-    # Column cast
-    # leave as it is
-
-    # Column crew
-    # leave as it is
+    # cast and crew untouched
     return df
 
 
 def clean_keywords(df):
-
-    # Column id - drop duplicates
     df = drop_duplicate_ids(df)
-
-    # Column keywords
-    # leave as it is
+    # keywords untouched
     return df
 
 
 def clean_movies_metadata(df):
-
-    # Column adult - keep only rows where 'adult' is exactly 'True' or 'False'
+    # Column adult
     valid_mask = df["adult"].isin(["True", "False"])
     before = len(df)
     df = df[valid_mask].copy()
@@ -93,72 +107,40 @@ def clean_movies_metadata(df):
     df["adult"] = df["adult"].map({"True": True, "False": False})
     print(f"\tRemoved {before - after} invalid 'adult' entries. Remaining rows: {after}")
 
-    # Column belongs_to_collection - keep NaN, and remove duplicated sub ids
-    df["belongs_to_collection"] = df["belongs_to_collection"].apply(parse_collection)
-    df["collection_id"] = df["belongs_to_collection"].apply(
-        lambda x: x["id"] if isinstance(x, dict) and "id" in x else None
-    )
+    # Column belongs_to_collection
     before = len(df)
-    df = df.drop_duplicates(subset="collection_id", keep="first")
+    df = ensure_string_column(df, "belongs_to_collection", fill_empty=True)
     after = len(df)
     print(f"\tRemoved {before - after} duplicate collection IDs. Remaining rows: {after}")
 
     # Column budget
-    df['budget'] = pd.to_numeric(df['budget'], errors='coerce')
-    df = df.dropna(subset=['budget'])
-
-    # Column genres
-    # leave as it is
+    df = convert_to_numeric(df, "budget", dropna=True)
 
     # Column homepage
-    df['homepage'] = df['homepage'].astype('string')
-    df['homepage'] = df['homepage'].fillna('')
+    df = ensure_string_column(df, "homepage", fill_empty=True)
 
-    # Column id - is str, must convert
-    df['id'] = pd.to_numeric(df['id'], errors='coerce')
-    df = df.dropna(subset=['id'])
-    df = drop_duplicate_ids(df)
+    # Column id
+    df = convert_to_numeric(df, "id", dropna=True, to_int=True, drop_duplicates=True, name="ID")
 
-    # Column imdb_id
-    df = df[df['imdb_id'].apply(lambda x: isinstance(x, str))]
-    df = df.reset_index(drop=True)
+    # Column imdbId
+    df = drop_invalid_strings(df, "imdb_id")
     df = drop_duplicate_imdb(df)
 
     # Column original_language
-    df = df[df['original_language'].apply(lambda x: isinstance(x, str))]
-    df = df.reset_index(drop=True)
-
-    # Column original_title
-    # leave as it is
+    df = drop_invalid_strings(df, "original_language")
 
     # Column overview
-    df = df[df['overview'].apply(lambda x: isinstance(x, str))]
-    df = df.reset_index(drop=True)
+    df = drop_invalid_strings(df, "overview")
 
     # Column popularity
-    df["popularity"] = pd.to_numeric(df["popularity"], errors="coerce")
-    before = len(df)
-    df.dropna(subset=["popularity"], inplace=True)
-    after = len(df)
-    print(f"\tRemoved {before - after} rows with missing 'popularity'. Remaining rows: {after}")
+    df = convert_to_numeric(df, "popularity", dropna=True)
 
     # Column poster_path
-    df = df[df['poster_path'].apply(lambda x: isinstance(x, str))]
-    df = df.reset_index(drop=True)
-    before = len(df)
-    df.dropna(subset=["poster_path"], inplace=True)
-    after = len(df)
-    print(f"\tRemoved {before - after} rows with missing 'poster_path'. Remaining rows: {after}")
+    df = drop_invalid_strings(df, "poster_path")
+    df = convert_to_numeric(df, "poster_path", dropna=True) if False else df  # keep behavior consistent
 
-    # Column production_companies
-    # leave as it is
-
-    # Column production_countries
-    # leave as it is
-
-    # Column release_data
-    df = df[df['release_data'].apply(lambda x: isinstance(x, str))]
-    df = df.reset_index(drop=True)
+    # Column release_date
+    df = drop_invalid_strings(df, "release_date")
 
     # Column revenue
     before = len(df)
@@ -167,54 +149,65 @@ def clean_movies_metadata(df):
     print(f"\tRemoved {before - after} rows with missing 'revenue'. Remaining rows: {after}")
 
     # Column runtime
-    df["runtime"] = pd.to_numeric(df["runtime"], errors="coerce")
-
+    df = convert_to_numeric(df, "runtime", dropna=True)
     before = len(df)
-    df = df[df["runtime"] > 0].copy()  # removes 0 and NaN
+    df = df[df["runtime"] > 0].copy()
     after = len(df)
-
     print(f"\tRemoved {before - after} rows with missing or zero 'runtime'. Remaining rows: {after}")
 
-    # Column spoken_languages
-    # leave as it is
-
     # Column status
-    df = df[df['status'].apply(lambda x: isinstance(x, str))]
-    df = df.reset_index(drop=True)
+    df = drop_invalid_strings(df, "status")
     before = len(df)
     df.dropna(subset=["status"], inplace=True)
     after = len(df)
     print(f"\tRemoved {before - after} rows with missing 'status'. Remaining rows: {after}")
 
     # Column tagline
-    df['tagline'] = df['tagline'].astype('string')
-    df['tagline'] = df['tagline'].fillna('')
+    df = ensure_string_column(df, "tagline", fill_empty=True)
 
     # Column title
-    df = df[df['title'].apply(lambda x: isinstance(x, str))]
-    df = df.reset_index(drop=True)
+    df = drop_invalid_strings(df, "title")
     before = len(df)
     df.dropna(subset=["title"], inplace=True)
     after = len(df)
     print(f"\tRemoved {before - after} rows with missing 'title'. Remaining rows: {after}")
 
     # Column video
-    df = df[df['video'].apply(lambda x: isinstance(x, bool))]
-    df = df.reset_index(drop=True)
+    df = drop_invalid_bool(df, "video")
 
-    # Column vote_average
-    before = len(df)
-    df.dropna(subset=["title"], inplace=True)
-    after = len(df)
-    print(f"\tRemoved {before - after} rows with missing 'title'. Remaining rows: {after}")
+    # vote_average and vote_count
+    for col in ["vote_average", "vote_count"]:
+        before = len(df)
+        df.dropna(subset=[col], inplace=True)
+        after = len(df)
+        print(f"\tRemoved {before - after} rows with missing 'title'. Remaining rows: {after}")
 
-    # Column vote_count
-    before = len(df)
-    df.dropna(subset=["title"], inplace=True)
-    after = len(df)
-    print(f"\tRemoved {before - after} rows with missing 'title'. Remaining rows: {after}")
     return df
 
+
+def clean_links(df, df_small):
+    for col in ["movieId", "imdbId", "tmdbId"]:
+        df = convert_to_numeric(df, col, dropna=True, to_int=True, drop_duplicates=True)
+        df_small = convert_to_numeric(df_small, col, dropna=True, to_int=True, drop_duplicates=True, name=f"{col} in df_small")
+
+    df = add_missing_rows(df, df_small, ["movieId"], "rows in df_small")
+    return df
+
+
+def clean_ratings(df, df_small):
+    # Drop missing values
+    before = len(df)
+    df.dropna(subset=["userId", "movieId", "rating", "timestamp"], inplace=True)
+    after = len(df)
+    print(f"\tRemoved {before - after} rows with missing values from df. Remaining rows: {after}")
+
+    before_small = len(df_small)
+    df_small.dropna(subset=["userId", "movieId", "rating", "timestamp"], inplace=True)
+    after_small = len(df_small)
+    print(f"\tRemoved {before_small - after_small} rows with missing values from df_small. Remaining rows: {after_small}")
+
+    df = add_missing_rows(df, df_small, ["userId", "movieId"], "ratings")
+    return df
 
 
 def clean_data():
@@ -222,50 +215,57 @@ def clean_data():
     Loads all raw CSV files from the 'movies/' folder.
     Returns a dictionary of pandas DataFrames.
     """
-    data_path = Path(__file__).resolve().parent / "movies"
+    data_path = "movies"
 
-    if not data_path.exists():
-        raise FileNotFoundError(f"Data folder not found: {data_path}")
-
-    print("=" * 60)
     print("Loading raw movie dataset files")
-    print("=" * 60)
 
     files = {
-        "movies_metadata": data_path / "movies_metadata.csv",
-        "credits": data_path / "credits.csv",
-        "keywords": data_path / "keywords.csv",
-        "links": data_path / "links.csv",
-        "links_small": data_path / "links_small.csv",
-        "ratings": data_path / "ratings.csv",
-        "ratings_small": data_path / "ratings_small.csv",
+        "movies_metadata": f"{data_path}/movies_metadata.csv",
+        "credits": f"{data_path}/credits.csv",
+        "keywords": f"{data_path}/keywords.csv",
+        "links": f"{data_path}/links.csv",
+        "links_small": f"{data_path}/links_small.csv",
+        "ratings": f"{data_path}/ratings.csv",
+        "ratings_small": f"{data_path}/ratings_small.csv",
     }
 
     datasets = {}
     for name, path in files.items():
-        if path.exists():
-            print(f"Loading {path.name} ...")
+        if os.path.exists(path):
+            print(f"Loading {os.path.basename(path)} ...")
             try:
                 df = pd.read_csv(path, low_memory=False)
                 datasets[name] = df
                 print(f"  Loaded {len(df):,} rows and {len(df.columns)} columns")
             except Exception as e:
-                print(f"  Error loading {path.name}: {e}")
+                print(f"  Error loading {os.path.basename(path)}: {e}")
         else:
-            print(f"  File not found: {path.name}")
+            print(f"  File not found: {os.path.basename(path)}")
 
     print("\nSummary:")
     for name, df in datasets.items():
         print(f"  {name}: {len(df):,} rows")
 
-    print("=" * 60)
     print("All available files loaded successfully.")
-    print("=" * 60)
 
-    print("=" * 60)
+    # CLEANING
+
     print("Cleaning credits.csv")
-    print("=" * 60)
+    datasets["credits"] = clean_credits(datasets["credits"])
 
+    print("Cleaning keywords.csv")
+    datasets["keywords"] = clean_keywords(datasets["keywords"])
+
+    print("Cleaning movies_metadata.csv")
+    datasets["movies_metadata"] = clean_movies_metadata(datasets["movies_metadata"])
+
+    print("Cleaning links.csv (merging with links_small.csv)")
+    datasets["links"] = clean_links(datasets["links"], datasets["links_small"])
+
+    print("Cleaning ratings.csv (merging with ratings_small.csv)")
+    datasets["ratings"] = clean_ratings(datasets["ratings"], datasets["ratings_small"])
+
+    print("\nAll cleaning operations completed successfully.")
 
     return datasets
 
