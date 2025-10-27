@@ -1,0 +1,170 @@
+{
+  "meta": {
+    "query_number": 2,
+    "description": "Example placeholder query",
+    "duration_sec": 57.145,
+    "count": 20
+  },
+  "data": [
+    {
+      "_id": [
+        "Huntz Hall",
+        "Leo Gorcey"
+      ],
+      "co_appearances": 34,
+      "avg_vote": 3.65
+    },
+    {
+      "_id": [
+        "Charlie Chaplin",
+        "Edna Purviance"
+      ],
+      "co_appearances": 33,
+      "avg_vote": 6.46060606060606
+    },
+    {
+      "_id": [
+        "Masako Nozawa",
+        "Mayumi Tanaka"
+      ],
+      "co_appearances": 31,
+      "avg_vote": 6.616129032258065
+    },
+    {
+      "_id": [
+        "Masako Nozawa",
+        "Naoko Watanabe"
+      ],
+      "co_appearances": 30,
+      "avg_vote": 6.67
+    },
+    {
+      "_id": [
+        "Oliver Hardy",
+        "Stan Laurel"
+      ],
+      "co_appearances": 30,
+      "avg_vote": 6.39
+    },
+    {
+      "_id": [
+        "Hiromi Tsuru",
+        "Masako Nozawa"
+      ],
+      "co_appearances": 29,
+      "avg_vote": 6.693103448275862
+    },
+    {
+      "_id": [
+        "Bud Abbott",
+        "Lou Costello"
+      ],
+      "co_appearances": 27,
+      "avg_vote": 6.47037037037037
+    },
+    {
+      "_id": [
+        "Jeff Bennett",
+        "Rob Paulsen"
+      ],
+      "co_appearances": 26,
+      "avg_vote": 6.196153846153846
+    },
+    {
+      "_id": [
+        "Barbara Hale",
+        "Raymond Burr"
+      ],
+      "co_appearances": 25,
+      "avg_vote": 4.98
+    },
+    {
+      "_id": [
+        "Frank Welker",
+        "Grey Griffin"
+      ],
+      "co_appearances": 25,
+      "avg_vote": 6.684
+    },
+    {
+      "_id": [
+        "Daisuke Gouri",
+        "Masako Nozawa"
+      ],
+      "co_appearances": 24,
+      "avg_vote": 6.704166666666667
+    },
+    {
+      "_id": [
+        "John Wayne",
+        "Paul Fix"
+      ],
+      "co_appearances": 24,
+      "avg_vote": 5.845833333333334
+    },
+    {
+      "_id": [
+        "Masako Nozawa",
+        "Toshio Furukawa"
+      ],
+      "co_appearances": 23,
+      "avg_vote": 6.6000000000000005
+    },
+    {
+      "_id": [
+        "Christopher Lee",
+        "Peter Cushing"
+      ],
+      "co_appearances": 21,
+      "avg_vote": 5.985714285714286
+    },
+    {
+      "_id": [
+        "Frank Mayo",
+        "Jack Mower"
+      ],
+      "co_appearances": 21,
+      "avg_vote": 5.385714285714285
+    },
+    {
+      "_id": [
+        "Frank Welker",
+        "Jeff Bennett"
+      ],
+      "co_appearances": 21,
+      "avg_vote": 6.176190476190476
+    },
+    {
+      "_id": [
+        "Varvara Dvalishvili",
+        "Varvara Dvalishvili"
+      ],
+      "co_appearances": 21,
+      "avg_vote": 5.5
+    },
+    {
+      "_id": [
+        "Bernard Gorcey",
+        "Leo Gorcey"
+      ],
+      "co_appearances": 20,
+      "avg_vote": 4.55
+    },
+    {
+      "_id": [
+        "Charlie Chaplin",
+        "Henry Bergman"
+      ],
+      "co_appearances": 20,
+      "avg_vote": 6.9799999999999995
+    },
+    {
+      "_id": [
+        "Frank Welker",
+        "Jim Cummings"
+      ],
+      "co_appearances": 20,
+      "avg_vote": 6.525
+    }
+  ]
+}

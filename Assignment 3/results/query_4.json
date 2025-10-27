@@ -1,0 +1,90 @@
+{
+  "meta": {
+    "query_number": 4,
+    "description": "Top 10 film collections (≥3 movies) by total revenue",
+    "duration_sec": 0.061,
+    "count": 10
+  },
+  "data": [
+    {
+      "_id": "Harry Potter Collection",
+      "movie_count": 8,
+      "total_revenue": 7707367425.0,
+      "median_vote": 7.5,
+      "earliest_date": "2001-11-16",
+      "latest_date": "2011-07-07"
+    },
+    {
+      "_id": "Star Wars Collection",
+      "movie_count": 8,
+      "total_revenue": 7434494790.0,
+      "median_vote": 7.45,
+      "earliest_date": "1977-05-25",
+      "latest_date": "2016-12-14"
+    },
+    {
+      "_id": "James Bond Collection",
+      "movie_count": 26,
+      "total_revenue": 7106970239.0,
+      "median_vote": 6.3,
+      "earliest_date": "1962-10-04",
+      "latest_date": "2015-10-26"
+    },
+    {
+      "_id": "The Fast and the Furious Collection",
+      "movie_count": 8,
+      "total_revenue": 5125098793.0,
+      "median_vote": 6.65,
+      "earliest_date": "2001-06-22",
+      "latest_date": "2017-04-12"
+    },
+    {
+      "_id": "Pirates of the Caribbean Collection",
+      "movie_count": 5,
+      "total_revenue": 4521576826.0,
+      "median_vote": 6.9,
+      "earliest_date": "2003-07-09",
+      "latest_date": "2017-05-23"
+    },
+    {
+      "_id": "Transformers Collection",
+      "movie_count": 5,
+      "total_revenue": 4366101244.0,
+      "median_vote": 6.1,
+      "earliest_date": "2007-06-27",
+      "latest_date": "2017-06-21"
+    },
+    {
+      "_id": "Despicable Me Collection",
+      "movie_count": 4,
+      "total_revenue": 3691070216.0,
+      "median_vote": 6.7,
+      "earliest_date": "2010-07-08",
+      "latest_date": "2017-06-15"
+    },
+    {
+      "_id": "The Twilight Collection",
+      "movie_count": 5,
+      "total_revenue": 3342107290.0,
+      "median_vote": 5.8,
+      "earliest_date": "2008-11-20",
+      "latest_date": "2012-11-13"
+    },
+    {
+      "_id": "Ice Age Collection",
+      "movie_count": 5,
+      "total_revenue": 3216708553.0,
+      "median_vote": 6.5,
+      "earliest_date": "2002-03-10",
+      "latest_date": "2016-06-23"
+    },
+    {
+      "_id": "Jurassic Park Collection",
+      "movie_count": 4,
+      "total_revenue": 3031484143.0,
+      "median_vote": 6.35,
+      "earliest_date": "1993-06-11",
+      "latest_date": "2015-06-09"
+    }
+  ]
+}

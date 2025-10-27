@@ -1,0 +1,85 @@
+{
+  "meta": {
+    "query_number": 6,
+    "description": "Average female proportion (top-5 cast) per decade",
+    "duration_sec": 5.099,
+    "count": 15
+  },
+  "data": [
+    {
+      "_id": 1870.0,
+      "avg_female_proportion": 1.0,
+      "movie_count": 1
+    },
+    {
+      "_id": 1890.0,
+      "avg_female_proportion": 0.5,
+      "movie_count": 42
+    },
+    {
+      "_id": 1900.0,
+      "avg_female_proportion": 0.4444444444444444,
+      "movie_count": 46
+    },
+    {
+      "_id": 2010.0,
+      "avg_female_proportion": 0.37587741225877414,
+      "movie_count": 11294
+    },
+    {
+      "_id": 1930.0,
+      "avg_female_proportion": 0.36639697950377564,
+      "movie_count": 1272
+    },
+    {
+      "_id": 2000.0,
+      "avg_female_proportion": 0.36027647932746315,
+      "movie_count": 9957
+    },
+    {
+      "_id": 1940.0,
+      "avg_female_proportion": 0.3602093625029405,
+      "movie_count": 1440
+    },
+    {
+      "_id": 1910.0,
+      "avg_female_proportion": 0.3381455399061033,
+      "movie_count": 164
+    },
+    {
+      "_id": 1990.0,
+      "avg_female_proportion": 0.33795469912102777,
+      "movie_count": 5172
+    },
+    {
+      "_id": 1950.0,
+      "avg_female_proportion": 0.33717750257997936,
+      "movie_count": 1981
+    },
+    {
+      "_id": 1920.0,
+      "avg_female_proportion": 0.3318306010928962,
+      "movie_count": 397
+    },
+    {
+      "_id": 1960.0,
+      "avg_female_proportion": 0.3247907647907648,
+      "movie_count": 2450
+    },
+    {
+      "_id": 1980.0,
+      "avg_female_proportion": 0.321091316199377,
+      "movie_count": 3633
+    },
+    {
+      "_id": 1970.0,
+      "avg_female_proportion": 0.31367549668874173,
+      "movie_count": 3216
+    },
+    {
+      "_id": 1880.0,
+      "avg_female_proportion": null,
+      "movie_count": 1
+    }
+  ]
+}

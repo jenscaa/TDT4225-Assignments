@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "query_number": 9,
+    "description": "Top 10 non-English languages in US-produced movies (count and example title)",
+    "duration_sec": 0.059,
+    "count": 10
+  },
+  "data": [
+    {
+      "count": 107,
+      "example_title": "Leon: The Professional",
+      "language": "fr"
+    },
+    {
+      "count": 65,
+      "example_title": "Bitter Sugar",
+      "language": "es"
+    },
+    {
+      "count": 55,
+      "example_title": "Frankie Starlight",
+      "language": "it"
+    },
+    {
+      "count": 48,
+      "example_title": "Cold Fever",
+      "language": "de"
+    },
+    {
+      "count": 30,
+      "example_title": "Godzilla 1985",
+      "language": "ja"
+    },
+    {
+      "count": 13,
+      "example_title": "Senseless",
+      "language": "pt"
+    },
+    {
+      "count": 13,
+      "example_title": "Quest for Fire",
+      "language": "xx"
+    },
+    {
+      "count": 10,
+      "example_title": "Eat Drink Man Woman",
+      "language": "zh"
+    },
+    {
+      "count": 10,
+      "example_title": "Dark Eyes",
+      "language": "ru"
+    },
+    {
+      "count": 8,
+      "example_title": "The Secrets of Jonathan Sperry",
+      "language": "nl"
+    }
+  ]
+}

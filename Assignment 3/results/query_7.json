@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "query_number": 7,
+    "description": "Top 20 noir / neo-noir movies by vote_average (vote_count ≥ 50)",
+    "duration_sec": 0.141,
+    "count": 7
+  },
+  "data": [
+    {
+      "title": "The Rules of the Game",
+      "vote_average": 7.7,
+      "vote_count": 109.0,
+      "year": "1939"
+    },
+    {
+      "title": "Drunken Angel",
+      "vote_average": 7.7,
+      "vote_count": 54.0,
+      "year": "1948"
+    },
+    {
+      "title": "The Bad Sleep Well",
+      "vote_average": 7.7,
+      "vote_count": 57.0,
+      "year": "1960"
+    },
+    {
+      "title": "Elevator to the Gallows",
+      "vote_average": 7.6,
+      "vote_count": 85.0,
+      "year": "1958"
+    },
+    {
+      "title": "Phoenix",
+      "vote_average": 6.4,
+      "vote_count": 147.0,
+      "year": "2014"
+    },
+    {
+      "title": "Synchronicity",
+      "vote_average": 5.7,
+      "vote_count": 114.0,
+      "year": "2015"
+    },
+    {
+      "title": "Frank & Lola",
+      "vote_average": 5.7,
+      "vote_count": 51.0,
+      "year": "2016"
+    }
+  ]
+}

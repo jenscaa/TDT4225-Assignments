@@ -1,0 +1,70 @@
+{
+  "meta": {
+    "query_number": 1,
+    "description": "Top 10 Directors by Median Revenue (≥5 movies)",
+    "duration_sec": 0.299,
+    "count": 10
+  },
+  "data": [
+    {
+      "_id": "David Yates",
+      "movies": 6,
+      "avg_vote": 7.1499999999999995,
+      "median_revenue": 936085967.5
+    },
+    {
+      "_id": "Peter Jackson",
+      "movies": 11,
+      "avg_vote": 7.2727272727272725,
+      "median_revenue": 871368364.0
+    },
+    {
+      "_id": "George Lucas",
+      "movies": 6,
+      "avg_vote": 6.883333333333333,
+      "median_revenue": 712398167.5
+    },
+    {
+      "_id": "Brad Bird",
+      "movies": 5,
+      "avg_vote": 7.1,
+      "median_revenue": 623722818.0
+    },
+    {
+      "_id": "Francis Lawrence",
+      "movies": 6,
+      "avg_vote": 6.8,
+      "median_revenue": 619388635.5
+    },
+    {
+      "_id": "Eric Darnell",
+      "movies": 5,
+      "avg_vote": 6.34,
+      "median_revenue": 532680671.0
+    },
+    {
+      "_id": "Tom McGrath",
+      "movies": 5,
+      "avg_vote": 6.4,
+      "median_revenue": 532680671.0
+    },
+    {
+      "_id": "Carlos Saldanha",
+      "movies": 5,
+      "avg_vote": 6.36,
+      "median_revenue": 500188435.0
+    },
+    {
+      "_id": "Andrew Adamson",
+      "movies": 5,
+      "avg_vote": 6.62,
+      "median_revenue": 484409218.0
+    },
+    {
+      "_id": "John Lasseter",
+      "movies": 5,
+      "avg_vote": 6.840000000000001,
+      "median_revenue": 461983149.0
+    }
+  ]
+}

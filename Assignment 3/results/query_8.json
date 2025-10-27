@@ -1,0 +1,150 @@
+{
+  "meta": {
+    "query_number": 8,
+    "description": "Top 20 director–actor pairs with ≥ 3 collaborations (by mean vote_average, vote_count ≥ 100)",
+    "duration_sec": 0.75,
+    "count": 20
+  },
+  "data": [
+    {
+      "films": 3,
+      "avg_rating": 8.366666666666667,
+      "avg_revenue": 113384031.0,
+      "director": "Francis Ford Coppola",
+      "actor": "Roman Coppola"
+    },
+    {
+      "films": 3,
+      "avg_rating": 8.133333333333333,
+      "avg_revenue": 6506393.666666667,
+      "director": "Charlie Chaplin",
+      "actor": "Hank Mann"
+    },
+    {
+      "films": 3,
+      "avg_rating": 8.1,
+      "avg_revenue": 141216.33333333334,
+      "director": "Akira Kurosawa",
+      "actor": "Takashi Shimura"
+    },
+    {
+      "films": 3,
+      "avg_rating": 8.1,
+      "avg_revenue": 99009750.66666667,
+      "director": "Francis Ford Coppola",
+      "actor": "John Cazale"
+    },
+    {
+      "films": 3,
+      "avg_rating": 8.1,
+      "avg_revenue": 141216.33333333334,
+      "director": "Akira Kurosawa",
+      "actor": "Daisuke Katô"
+    },
+    {
+      "films": 3,
+      "avg_rating": 8.1,
+      "avg_revenue": 182573606.33333334,
+      "director": "Quentin Tarantino",
+      "actor": "Harvey Keitel"
+    },
+    {
+      "films": 3,
+      "avg_rating": 8.1,
+      "avg_revenue": 141216.33333333334,
+      "director": "Akira Kurosawa",
+      "actor": "Noriko Honma"
+    },
+    {
+      "films": 3,
+      "avg_rating": 8.1,
+      "avg_revenue": 141216.33333333334,
+      "director": "Akira Kurosawa",
+      "actor": "Minoru Chiaki"
+    },
+    {
+      "films": 4,
+      "avg_rating": 8.075,
+      "avg_revenue": 96622408.25,
+      "director": "Francis Ford Coppola",
+      "actor": "Robert Duvall"
+    },
+    {
+      "films": 3,
+      "avg_rating": 8.033333333333333,
+      "avg_revenue": 972181581.0,
+      "director": "Peter Jackson",
+      "actor": "Sean Astin"
+    },
+    {
+      "films": 3,
+      "avg_rating": 8.033333333333333,
+      "avg_revenue": 972181581.0,
+      "director": "Peter Jackson",
+      "actor": "Dominic Monaghan"
+    },
+    {
+      "films": 3,
+      "avg_rating": 8.033333333333333,
+      "avg_revenue": 972181581.0,
+      "director": "Peter Jackson",
+      "actor": "Billy Boyd"
+    },
+    {
+      "films": 3,
+      "avg_rating": 8.033333333333333,
+      "avg_revenue": 972181581.0,
+      "director": "Peter Jackson",
+      "actor": "Sean Bean"
+    },
+    {
+      "films": 3,
+      "avg_rating": 8.033333333333333,
+      "avg_revenue": 972181581.0,
+      "director": "Peter Jackson",
+      "actor": "Liv Tyler"
+    },
+    {
+      "films": 3,
+      "avg_rating": 8.033333333333333,
+      "avg_revenue": 972181581.0,
+      "director": "Peter Jackson",
+      "actor": "Viggo Mortensen"
+    },
+    {
+      "films": 3,
+      "avg_rating": 8.033333333333333,
+      "avg_revenue": 972181581.0,
+      "director": "Peter Jackson",
+      "actor": "John Rhys-Davies"
+    },
+    {
+      "films": 5,
+      "avg_rating": 8.02,
+      "avg_revenue": 4903836.2,
+      "director": "Charlie Chaplin",
+      "actor": "Charlie Chaplin"
+    },
+    {
+      "films": 3,
+      "avg_rating": 8.0,
+      "avg_revenue": 11766666.666666666,
+      "director": "Billy Wilder",
+      "actor": "Bert Stevens"
+    },
+    {
+      "films": 3,
+      "avg_rating": 8.0,
+      "avg_revenue": 3673060.3333333335,
+      "director": "Charlie Chaplin",
+      "actor": "John Rand"
+    },
+    {
+      "films": 4,
+      "avg_rating": 8.0,
+      "avg_revenue": 3379795.25,
+      "director": "Charlie Chaplin",
+      "actor": "Henry Bergman"
+    }
+  ]
+}

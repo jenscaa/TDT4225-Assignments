@@ -1,0 +1,130 @@
+{
+  "meta": {
+    "query_number": 3,
+    "description": "Top 10 actors (≥10 movies) with widest genre breadth",
+    "duration_sec": 4.524,
+    "count": 10
+  },
+  "data": [
+    {
+      "_id": "Christopher Lee",
+      "genre_count": 20,
+      "example_genres": [
+        "Adventure",
+        "Drama",
+        "Documentary",
+        "Fantasy",
+        "Action"
+      ],
+      "movie_count": 382
+    },
+    {
+      "_id": "Donald Sutherland",
+      "genre_count": 20,
+      "example_genres": [
+        "Foreign",
+        "Adventure",
+        "Fantasy",
+        "Comedy",
+        "Action"
+      ],
+      "movie_count": 274
+    },
+    {
+      "_id": "Christopher Walken",
+      "genre_count": 20,
+      "example_genres": [
+        "Documentary",
+        "History",
+        "Horror",
+        "Adventure",
+        "Mystery"
+      ],
+      "movie_count": 255
+    },
+    {
+      "_id": "Liam Neeson",
+      "genre_count": 20,
+      "example_genres": [
+        "Mystery",
+        "Action",
+        "Drama",
+        "Comedy",
+        "Romance"
+      ],
+      "movie_count": 224
+    },
+    {
+      "_id": "Keith David",
+      "genre_count": 20,
+      "example_genres": [
+        "Drama",
+        "History",
+        "Comedy",
+        "Mystery",
+        "Foreign"
+      ],
+      "movie_count": 223
+    },
+    {
+      "_id": "Jim Broadbent",
+      "genre_count": 20,
+      "example_genres": [
+        "Crime",
+        "Thriller",
+        "Foreign",
+        "Western",
+        "Horror"
+      ],
+      "movie_count": 205
+    },
+    {
+      "_id": "Charlton Heston",
+      "genre_count": 20,
+      "example_genres": [
+        "Foreign",
+        "TV Movie",
+        "Western",
+        "Thriller",
+        "Crime"
+      ],
+      "movie_count": 194
+    },
+    {
+      "_id": "James Earl Jones",
+      "genre_count": 20,
+      "example_genres": [
+        "Thriller",
+        "Western",
+        "Adventure",
+        "Foreign",
+        "Romance"
+      ],
+      "movie_count": 179
+    },
+    {
+      "_id": "Ned Beatty",
+      "genre_count": 20,
+      "example_genres": [
+        "Romance",
+        "Comedy",
+        "Drama",
+        "Mystery",
+        "Adventure"
+      ],
+      "movie_count": 174
+    },
+    {
+      "_id": "Martin Sheen",
+      "genre_count": 20,
+      "example_genres": [
+        "Horror",
+        "History",
+        "Drama",
+        "TV Movie",
+        "War"
+      ],
+      "movie_count": 174
+    }
+  ]
+}
