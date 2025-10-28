@@ -1,0 +1,69 @@
+{
+  "meta": {
+    "label": "Q10 Top 10 genre-diverse users",
+    "duration_sec": 64.491,
+    "count": 10
+  },
+  "data": [
+    {
+      "userId": 59908,
+      "ratings_count": 2390,
+      "distinct_genres": 20,
+      "var_pop": 1.1516545578683832
+    },
+    {
+      "userId": 208730,
+      "ratings_count": 1866,
+      "distinct_genres": 20,
+      "var_pop": 1.3737715238216666
+    },
+    {
+      "userId": 186783,
+      "ratings_count": 1733,
+      "distinct_genres": 20,
+      "var_pop": 1.051578952275321
+    },
+    {
+      "userId": 173274,
+      "ratings_count": 1340,
+      "distinct_genres": 20,
+      "var_pop": 1.033054550011137
+    },
+    {
+      "userId": 137664,
+      "ratings_count": 1291,
+      "distinct_genres": 20,
+      "var_pop": 0.584818270562872
+    },
+    {
+      "userId": 208501,
+      "ratings_count": 726,
+      "distinct_genres": 20,
+      "var_pop": 0.7120154398986092
+    },
+    {
+      "userId": 266969,
+      "ratings_count": 603,
+      "distinct_genres": 20,
+      "var_pop": 0.8743650459697108
+    },
+    {
+      "userId": 25872,
+      "ratings_count": 323,
+      "distinct_genres": 20,
+      "var_pop": 0.5831408333253485
+    },
+    {
+      "userId": 126867,
+      "ratings_count": 296,
+      "distinct_genres": 20,
+      "var_pop": 0.7102698137326531
+    },
+    {
+      "userId": 224621,
+      "ratings_count": 1698,
+      "distinct_genres": 19,
+      "var_pop": 1.5827392026370664
+    }
+  ]
+}

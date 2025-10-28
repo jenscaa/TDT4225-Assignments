@@ -1,0 +1,59 @@
+{
+  "meta": {
+    "label": "Q9 Top original languages in US-involved non-English",
+    "duration_sec": 0.054,
+    "count": 10
+  },
+  "data": [
+    {
+      "original_language": "fr",
+      "count": 111,
+      "example_title": "Wings of Courage"
+    },
+    {
+      "original_language": "es",
+      "count": 71,
+      "example_title": "Bitter Sugar"
+    },
+    {
+      "original_language": "it",
+      "count": 55,
+      "example_title": "Frankie Starlight"
+    },
+    {
+      "original_language": "de",
+      "count": 51,
+      "example_title": "Cold Fever"
+    },
+    {
+      "original_language": "ja",
+      "count": 30,
+      "example_title": "Godzilla 1985"
+    },
+    {
+      "original_language": "pt",
+      "count": 14,
+      "example_title": "Senseless"
+    },
+    {
+      "original_language": "xx",
+      "count": 14,
+      "example_title": "Quest for Fire"
+    },
+    {
+      "original_language": "nl",
+      "count": 12,
+      "example_title": "Come On, Rangers"
+    },
+    {
+      "original_language": "ru",
+      "count": 11,
+      "example_title": "Dark Eyes"
+    },
+    {
+      "original_language": "zh",
+      "count": 11,
+      "example_title": "Eat Drink Man Woman"
+    }
+  ]
+}

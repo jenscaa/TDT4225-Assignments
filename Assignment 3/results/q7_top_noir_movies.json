@@ -1,0 +1,129 @@
+{
+  "meta": {
+    "label": "Q7 Top noir / neo-noir movies",
+    "duration_sec": 0.178,
+    "count": 20
+  },
+  "data": [
+    {
+      "title": "Leon: The Professional",
+      "vote_average": 8.2,
+      "vote_count": 4293,
+      "year": 1994
+    },
+    {
+      "title": "Sunset Boulevard",
+      "vote_average": 8.2,
+      "vote_count": 533,
+      "year": 1950
+    },
+    {
+      "title": "High and Low",
+      "vote_average": 8.2,
+      "vote_count": 123,
+      "year": 1963
+    },
+    {
+      "title": "Le Trou",
+      "vote_average": 8.2,
+      "vote_count": 73,
+      "year": 1960
+    },
+    {
+      "title": "Memento",
+      "vote_average": 8.1,
+      "vote_count": 4168,
+      "year": 2000
+    },
+    {
+      "title": "Vertigo",
+      "vote_average": 8.0,
+      "vote_count": 1162,
+      "year": 1958
+    },
+    {
+      "title": "Double Indemnity",
+      "vote_average": 8.0,
+      "vote_count": 425,
+      "year": 1944
+    },
+    {
+      "title": "Blade Runner",
+      "vote_average": 7.9,
+      "vote_count": 3833,
+      "year": 1982
+    },
+    {
+      "title": "Casablanca",
+      "vote_average": 7.9,
+      "vote_count": 1462,
+      "year": 1942
+    },
+    {
+      "title": "Chinatown",
+      "vote_average": 7.9,
+      "vote_count": 939,
+      "year": 1974
+    },
+    {
+      "title": "The Third Man",
+      "vote_average": 7.9,
+      "vote_count": 431,
+      "year": 1949
+    },
+    {
+      "title": "The Night of the Hunter",
+      "vote_average": 7.9,
+      "vote_count": 335,
+      "year": 1955
+    },
+    {
+      "title": "Diabolique",
+      "vote_average": 7.9,
+      "vote_count": 198,
+      "year": 1955
+    },
+    {
+      "title": "Le Samouraï",
+      "vote_average": 7.9,
+      "vote_count": 187,
+      "year": 1967
+    },
+    {
+      "title": "Ace in the Hole",
+      "vote_average": 7.9,
+      "vote_count": 128,
+      "year": 1951
+    },
+    {
+      "title": "The Big Heat",
+      "vote_average": 7.9,
+      "vote_count": 111,
+      "year": 1953
+    },
+    {
+      "title": "Monsieur Verdoux",
+      "vote_average": 7.9,
+      "vote_count": 74,
+      "year": 1947
+    },
+    {
+      "title": "The Maltese Falcon",
+      "vote_average": 7.8,
+      "vote_count": 435,
+      "year": 1941
+    },
+    {
+      "title": "Notorious",
+      "vote_average": 7.8,
+      "vote_count": 345,
+      "year": 1946
+    },
+    {
+      "title": "White Heat",
+      "vote_average": 7.8,
+      "vote_count": 92,
+      "year": 1949
+    }
+  ]
+}

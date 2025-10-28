@@ -1,0 +1,79 @@
+{
+  "meta": {
+    "label": "Q6 Female proportion among top-5 cast by decade",
+    "duration_sec": 0.426,
+    "count": 14
+  },
+  "data": [
+    {
+      "decade": 1870,
+      "avg_female_prop": 1.0,
+      "movie_count": 1
+    },
+    {
+      "decade": 1900,
+      "avg_female_prop": 0.5,
+      "movie_count": 11
+    },
+    {
+      "decade": 1890,
+      "avg_female_prop": 0.5,
+      "movie_count": 2
+    },
+    {
+      "decade": 2010,
+      "avg_female_prop": 0.37738293088278424,
+      "movie_count": 10229
+    },
+    {
+      "decade": 1930,
+      "avg_female_prop": 0.36912832929782086,
+      "movie_count": 1239
+    },
+    {
+      "decade": 2000,
+      "avg_female_prop": 0.362958240357029,
+      "movie_count": 9411
+    },
+    {
+      "decade": 1940,
+      "avg_female_prop": 0.3581169590643275,
+      "movie_count": 1425
+    },
+    {
+      "decade": 1910,
+      "avg_female_prop": 0.34143192488262913,
+      "movie_count": 142
+    },
+    {
+      "decade": 1990,
+      "avg_female_prop": 0.3391632894292469,
+      "movie_count": 5076
+    },
+    {
+      "decade": 1950,
+      "avg_female_prop": 0.33696893366918557,
+      "movie_count": 1985
+    },
+    {
+      "decade": 1920,
+      "avg_female_prop": 0.32844202898550723,
+      "movie_count": 368
+    },
+    {
+      "decade": 1960,
+      "avg_female_prop": 0.32487656933276904,
+      "movie_count": 2363
+    },
+    {
+      "decade": 1980,
+      "avg_female_prop": 0.3196287857210671,
+      "movie_count": 3511
+    },
+    {
+      "decade": 1970,
+      "avg_female_prop": 0.3113220005835291,
+      "movie_count": 3101
+    }
+  ]
+}
